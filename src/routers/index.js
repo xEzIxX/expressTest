@@ -5,4 +5,4 @@ router.get('/',(req,res)=>{
     res.send('hello, express');
 });
 
-module.exprots = router;
+export default router;
