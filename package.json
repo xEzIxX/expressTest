@@ -22,5 +22,6 @@
     "eslint": "^8.56.0",
     "nodemon": "^3.0.1"
   },
+  "eslintIgnore": ["src/public/**", "*.ejs","*.json"],
   "type": "module"
 }
