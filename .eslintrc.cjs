@@ -5,6 +5,7 @@ module.exports = {
   },
   extends: [
     'standard', 
+    'eslint:recommended',
     'plugin:prettier/recommended'
   ],
   overrides: [
@@ -25,5 +26,8 @@ module.exports = {
     sourceType: 'module'
   },
   rules: {
+    "eqeqeq": "off",
+    "curly": "error",
+    "sort-keys": ["error", "asc", {"caseSensitive": true, "natural": false, "minKeys": 2}]
   }
 }
