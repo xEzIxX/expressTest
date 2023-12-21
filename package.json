@@ -23,5 +23,5 @@
     "eslint-plugin-prettier": "^5.1.0",
     "nodemon": "^3.0.1"
   },
-  "type": "module"
+  "type": "commonjs"
 }
