@@ -1,6 +1,6 @@
 <div align="center">
   
-![header](https://capsule-render.vercel.app/api?text=expressTest&animation=fadeIn)
+![header](https://capsule-render.vercel.app/api?text=expressTest)
 
 </div> 
 
@@ -20,23 +20,22 @@
 
 ## 목적
 다음과 같은 기능을 실행 가능한 **블로그** 구현을 목적으로 합니다.
-1. 로그인
+1. 인증
 2. 글 작성 및 편집
 3. 검색
 4. 댓글
-5. 방문자 및 조회수 통계 및 분석 
-6. 구독 및 즐겨찾기
+5. 방문자 및 조회수 통계 및 분석  
 
 ## 구현 기능
 
 
 ## 디렉토리 구성  
 **src/**   
-　**loaders** : 모듈을 입력받아 js에서 처리할 수 있도록  
+　**loaders** :    
 　**models** : 데이터 베이스 구조 저장  
-　**router** : 서버 연결 기능  
-　**services** : 서비스 정보를 제공, 서비스를 게시, 검색, 연결할  수 있는 단일 위치를 제공  
+　**router** : 서버 연결   
+　**services** : 서비스 정보를 제공
 　**utils** : 재사용이 가능한 utility함수, 헬퍼 함수 등을 포함
 
 ## 실행 방법
-**npm start**
+**npm start** 을 통하여 서버 연결
