@@ -12,4 +12,4 @@ router.route('/sign')
     .get(signUp)
     .post(signUpHandler)
 
-export default router
+export {router}
