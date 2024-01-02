@@ -1,15 +1,15 @@
 import express from 'express'
-const router = express.Router()
+const loginRouter = express.Router()
 
-router.route('/')
+loginRouter.route('/')
     .get(login)
     .post(checkLog)
 
-router.route('/logout')
+loginRouter.route('/logout')
     .get(main)
 
-router.route('/sign')
+loginRouter.route('/sign')
     .get(signUp)
     .post(signUpHandler)
 
-export {router}
+export {loginRouter}
