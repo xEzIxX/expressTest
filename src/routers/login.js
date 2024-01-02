@@ -1,15 +1,15 @@
-import express from "express";
-const router = express.Router();
+import express from 'express'
+const router = express.Router()
 
 router.route('/')
     .get(login)
-    .post(checkLog);
+    .post(checkLog)
 
 router.route('/logout')
-    .get(main);
+    .get(main)
 
 router.route('/sign')
     .get(signUp)
-    .post(signUpHandler);
+    .post(signUpHandler)
 
-export default router;
+export default router
