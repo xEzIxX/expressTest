@@ -6,7 +6,7 @@ router.route('/')
     .post(checkLog);
 
 router.route('/logout')
-    .get(logout);
+    .get(main);
 
 router.route('/sign')
     .get(signUp)
