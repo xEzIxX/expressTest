@@ -5,8 +5,7 @@ loginRouter.route('/')
     .get(login)
     .post(checkLog)
 
-loginRouter.route('/logout')
-    .get(main)
+loginRouter.get('/logout', main)
 
 loginRouter.route('/sign')
     .get(signUp)
