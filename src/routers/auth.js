@@ -1,14 +1,14 @@
 import express from 'express'
-const loginRouter = express.Router()
+const authRouter = express.Router()
 
-loginRouter.route('/')
+authRouter.route('/')
     .get(login)
     .post(checkLog)
 
-loginRouter.get('/logout', main)
+authRouter.get('/logout', main)
 
-loginRouter.route('/sign')
+authRouter.route('/sign')
     .get(signUp)
     .post(signUpHandler)
 
-export {loginRouter}
+export {authRouter}
