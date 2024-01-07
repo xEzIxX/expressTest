@@ -1,4 +1,4 @@
-export class Login {
+export class Auth {
     login() {
         res.render('./views/loginPage')
     }
