@@ -8,7 +8,7 @@ const app = express()
 
 app.use(morgan('dev'))
 
-app.use('/login', authRouter)
+app.use('/auth', authRouter)
 
 app.use((err, req, res, next) => {
     res.status(404).send('Not Found')
