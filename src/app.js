@@ -1,8 +1,7 @@
 import 'dotenv/config'
 import express from 'express'
 import morgan from 'morgan'
-
-import authRouter from './routers/auth.js'
+import { authRouter } from './routers/auth.js'
 
 const app = express()
 
