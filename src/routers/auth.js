@@ -1,10 +1,12 @@
 import express from 'express'
 import { Auth } from '../services/auth.js'
+
 const authRouter = express.Router()
+const authService = new Auth()
 
 authRouter.get('/', function (req, res) {
     try {
-        Auth.login()
+        authService.login()
     } catch (err) {
         console.log(err)
     }
@@ -12,7 +14,7 @@ authRouter.get('/', function (req, res) {
 
 authRouter.post('/', function (req, res) {
     try {
-        Auth.checkLog()
+        authService.checkLog()
     } catch (err) {
         console.log(err)
     }
@@ -20,7 +22,7 @@ authRouter.post('/', function (req, res) {
 
 authRouter.get('/logout', function (req, res) {
     try {
-        Auth.main()
+        authService.main()
     } catch (err) {
         console.log(err)
     }
@@ -28,7 +30,7 @@ authRouter.get('/logout', function (req, res) {
 
 authRouter.get('/sign', function (req, res) {
     try {
-        Auth.signUp()
+        authService.signUp()
     } catch (err) {
         console.log(err)
     }
@@ -36,7 +38,7 @@ authRouter.get('/sign', function (req, res) {
 
 authRouter.post('/sign', function (req, res) {
     try {
-        Auth.signUpHandler()
+        authService.signUpHandler()
     } catch (err) {
         console.log(err)
     }
