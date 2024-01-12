@@ -18,6 +18,10 @@
 ![PRETTIER](https://img.shields.io/badge/prettier-1A2C34?style=for-the-badge&logo=prettier&logoColor=F7BA3E)
 </div>
 
+## ERD
+![myERD](https://github.com/xEzIxX/expressTest/assets/128362224/c48b3cc0-5498-4362-b916-38020bada16b)
+
+
 ## 목적
 다음과 같은 기능을 실행 가능한 **블로그** 구현을 목적으로 합니다.
 1. 인증
