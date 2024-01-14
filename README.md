@@ -1,7 +1,6 @@
 <div align="center">
   
-![image](https://github.com/xEzIxX/expressTest/assets/128362224/859c4e19-cef7-4f86-9956-d4185501dea9)
-
+![header](https://capsule-render.vercel.app/api?text=expressTest)
 
 </div> 
 
@@ -28,7 +27,8 @@
 5. 방문자 및 조회수 통계 및 분석  
 
 ## ERD
-![myERD](https://github.com/xEzIxX/expressTest/assets/128362224/c48b3cc0-5498-4362-b916-38020bada16b)
+![myERD](https://github.com/xEzIxX/expressTest/assets/128362224/46e39480-bd5b-4c69-bdab-4c0c6dacf005)
+
 
 ## 구현 기능
 
