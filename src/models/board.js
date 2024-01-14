@@ -1,38 +1,39 @@
 import { Sequelize, DataTypes } from 'sequelize'
 import {sequelize} from './index.js'
 
-export function User(sequelize, DataTypes) {
+export function Board(DataTypes, sequelize) {
     return sequelize.define(
-        'User',
+        'Board',
         {
-            user_id: {
+            board_id: {
                 type: DataTypes.BIGINT(20),
                 allowNull: false,
                 // type: DataTypes.UUID,
                 // defaultValue: DataTypes.UUIDV4
             },
-            user_pw: {
-                type: DataTypes.STRING(512),
-                allowNull: false,
-            },
-            user_follow: {
-                type: DataTypes.STRING(50),
-            },
-            user_nickname: {
+            board_title: {
                 type: DataTypes.STRING(50),
                 allowNull: false,
             },
-            user_name: {
-                type: DataTypes.STRING(50),
+            board_content: {
+                type: DataTypes.STRING(255),
+            },
+            board_view: {
+                type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            user_email: {
-                type: DataTypes.STRING(50),
+            board_liked: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            board_user_id: {
+                // FK임
+                type: DataTypes.BIGINT(20),
                 allowNull: false,
             },
         },
         {
             freezeTableName: true,
-        },
+        }
     )
 }
