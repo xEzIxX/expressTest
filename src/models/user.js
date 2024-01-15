@@ -1,13 +1,15 @@
 import { DataTypes } from 'sequelize'
 import { sequelize } from './Instance.js'
 
-export function User(sequelize, DataTypes) {
+export function User() {
     return sequelize.define(
         'User',
         {
             user_id: {
                 type: DataTypes.BIGINT(20),
+                primaryKey: true,
                 allowNull: false,
+                autoIncrement: true,
                 // type: DataTypes.UUID,
                 // defaultValue: DataTypes.UUIDV4
             },
