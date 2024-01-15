@@ -1,13 +1,15 @@
 import { DataTypes } from 'sequelize'
 import { sequelize } from './Instance.js'
 
-export function Comment(sequelize, DataTypes) {
+export function Comment() {
     return sequelize.define(
         'Comment',
         {
             comment_id: {
                 type: DataTypes.BIGINT(20),
+                primaryKey: true,
                 allowNull: false,
+                autoIncrement: true,
                 // type: DataTypes.UUID,
                 // defaultValue: DataTypes.UUIDV4
             },
@@ -19,14 +21,20 @@ export function Comment(sequelize, DataTypes) {
                 type: DataTypes.INTEGER,
             },
             comment_user_id: {
-                // FK임
                 type: DataTypes.BIGINT(20),
-                allowNull: false,
+                field: 'comment_writer',
+                references: {
+                    model: 'User',
+                    key: 'user_id',
+                },
             },
             comment_board_id: {
-                // FK임
                 type: DataTypes.BIGINT(20),
-                allowNull: false,
+                field: 'board_commenter',
+                references: {
+                    model: 'Board',
+                    key: 'board_id',
+                },
             },
         },
         {
