@@ -1,5 +1,5 @@
-import { Sequelize, DataTypes } from 'sequelize'
-import {sequelize} from './index.js'
+import { DataTypes } from 'sequelize'
+import { sequelize } from './Instance.js'
 
 export function User(sequelize, DataTypes) {
     return sequelize.define(
@@ -33,6 +33,6 @@ export function User(sequelize, DataTypes) {
         },
         {
             freezeTableName: true,
-        },
+        }
     )
 }

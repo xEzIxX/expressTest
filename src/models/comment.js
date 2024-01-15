@@ -1,11 +1,8 @@
-import { Sequelize, DataTypes } from 'sequelize'
-import {sequelize} from './index.js'
+import { DataTypes } from 'sequelize'
+import { sequelize } from './Instance.js'
 
-//import { User } from './user.js'
-//import { Board } from './board.js'
-
-export function Comment(DataTypes, sequelize) {
-    return Sequelize.define(
+export function Comment(sequelize, DataTypes) {
+    return sequelize.define(
         'Comment',
         {
             comment_id: {

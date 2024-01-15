@@ -1,7 +1,7 @@
-import { Sequelize, DataTypes } from 'sequelize'
-import {sequelize} from './index.js'
+import { DataTypes } from 'sequelize'
+import { sequelize } from './Instance.js'
 
-export function Board(DataTypes, sequelize) {
+export function Board(sequelize, DataTypes) {
     return sequelize.define(
         'Board',
         {
