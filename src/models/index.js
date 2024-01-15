@@ -1,4 +1,3 @@
-import { Sequelize } from 'sequelize'
 import { sequelize } from './Instance.js'
 
 import { User } from './user.js'
@@ -8,7 +7,6 @@ import { Comment } from './comment.js'
 const db = {} // 실제 db가 이 객체와 연결됨
 
 db.sequelize = sequelize
-db.Sequelize = Sequelize
 
 db.User = User()
 db.Board = Board()
