@@ -5,12 +5,10 @@ export function Board(sequelize) {
         'Board',
         {
             board_id: {
-                type: DataTypes.BIGINT(20),
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
                 allowNull: false,
-                autoIncrement: true,
-                // type: DataTypes.UUID,
-                // defaultValue: DataTypes.UUIDV4
             },
             board_title: {
                 type: DataTypes.STRING(50),
@@ -29,7 +27,7 @@ export function Board(sequelize) {
                 defaultValue: 0,
             },
             board_user_id: {
-                type: DataTypes.BIGINT(20),
+                type: DataTypes.UUID,
                 field: 'board_writer',
                 references: {
                     model: 'User', // User 모델을 참조하는 코드 Fk를 나타냄

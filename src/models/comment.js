@@ -5,12 +5,10 @@ export function Comment(sequelize) {
         'Comment',
         {
             comment_id: {
-                type: DataTypes.BIGINT(20),
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
                 allowNull: false,
-                autoIncrement: true,
-                // type: DataTypes.UUID,
-                // defaultValue: DataTypes.UUIDV4
             },
             comment_content: {
                 type: DataTypes.STRING(512),
@@ -20,7 +18,7 @@ export function Comment(sequelize) {
                 type: DataTypes.INTEGER,
             },
             comment_user_id: {
-                type: DataTypes.BIGINT(20),
+                type: DataTypes.UUID,
                 field: 'comment_writer',
                 references: {
                     model: 'User',
@@ -28,7 +26,7 @@ export function Comment(sequelize) {
                 },
             },
             comment_board_id: {
-                type: DataTypes.BIGINT(20),
+                type: DataTypes.UUID,
                 field: 'board_commenter',
                 references: {
                     model: 'Board',

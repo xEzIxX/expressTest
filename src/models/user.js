@@ -5,12 +5,10 @@ export function User(sequelize) {
         'User',
         {
             user_id: {
-                type: DataTypes.BIGINT(20),
+                type: DataTypes.UUID,
+                defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
                 allowNull: false,
-                autoIncrement: true,
-                // type: DataTypes.UUID,
-                // defaultValue: DataTypes.UUIDV4
             },
             user_pw: {
                 type: DataTypes.STRING(512),
