@@ -1,18 +1,49 @@
-import { Sequelize } from 'sequelize'
-import 'dotenv/config'
-import { User } from './user'
+import { Sequelize, Datatypes } from 'sequelize'
+import { sequelize } from './Instance.js'
 
-const db = {}
+import { User } from './user.js'
+import { Board } from './board.js'
+import { Comment } from './comment.js'
 
-const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD
-)
+try{
+const db = {} //실제 db가 이 객체와 연결
+
 db.sequelize = sequelize
+db.Sequelize = Sequelize
 
-db.User = User // 모델 클래스를 넣음
-User.init(sequelize) // 모델과 테이블의 종합적인 연결
-//User.associate(db) // db객체 안의 모델들 간의 관계 설정
+db.User = User(sequelize, DataTypes)
+db.Comment = Comment(sequelize, DataTypes)
+db.Board = Board(sequelize, DataTypes)
+
+/*
+db.User.init(sequelize) // 모델과 테이블의 종합적인 연결
+db.Comment.init(sequelize)
+db.Board.init(sequelize) 
+*/
+
+db.User.hasMany(db.Comment, {
+    foreignKey: 'comment_user_id',
+})
+
+db.User.hasMany(db.Board, {
+    foreignKey: 'comment_board_id',
+})
+
+db.Board.hasMany(db.Comment, {
+    foreignKey: 'comment_board_id',
+})
+
+db.Board.belongsTo(db.User, {
+    foreignKey: 'comment_board_id',
+})
+db.Comment.belongsTo(db.Board, {
+    foreignKey: 'comment_board_id',
+})
+db.Comment.belongsTo(db.User, {
+    foreignKey: 'comment_user_id',
+})
+}catch(err){
+    console.log('데이터 베이스 정의 실패', err)
+}
 
 export { db }
