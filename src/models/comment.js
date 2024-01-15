@@ -1,7 +1,6 @@
 import { DataTypes } from 'sequelize'
-import { sequelize } from './Instance.js'
 
-export function Comment() {
+export function Comment(sequelize) {
     return sequelize.define(
         'Comment',
         {

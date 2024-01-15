@@ -1,7 +1,6 @@
 import { DataTypes } from 'sequelize'
-import { sequelize } from './Instance.js'
 
-export function Board() {
+export function Board(sequelize) {
     return sequelize.define(
         'Board',
         {
