@@ -1,6 +1,6 @@
 import { db } from '../models/index.js'
 
-const sequelizeLoader = async function () {
+export const sequelizeLoader = async function () {
     try {
         await db.sequelize.authenticate()
         console.log('데이터 베이스 연결 성공')
@@ -11,5 +11,3 @@ const sequelizeLoader = async function () {
         console.error('데이터 베이스 연결 실패:', error)
     }
 }
-
-export { sequelizeLoader }
