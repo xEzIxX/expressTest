@@ -1,6 +1,4 @@
-import { DataTypes } from 'sequelize'
-
-export function User(sequelize) {
+export function User(sequelize, DataTypes) {
     return sequelize.define(
         'User',
         {

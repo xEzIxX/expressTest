@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import { Sequelize } from 'sequelize'
+import { Sequelize, DataTypes } from 'sequelize'
 
 import { User } from './user.js'
 import { Board } from './board.js'
@@ -19,9 +19,9 @@ const sequelize = new Sequelize(
 
 db.sequelize = sequelize
 
-db.User = User(sequelize)
-db.Board = Board(sequelize)
-db.Comment = Comment(sequelize)
+db.User = User(sequelize, DataTypes)
+db.Board = Board(sequelize, DataTypes)
+db.Comment = Comment(sequelize, DataTypes)
 
 db.User.hasMany(db.Comment, {
     foreignKey: 'comment_user_id',

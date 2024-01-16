@@ -1,6 +1,4 @@
-import { DataTypes } from 'sequelize'
-
-export function Comment(sequelize) {
+export function Comment(sequelize, DataTypes) {
     return sequelize.define(
         'Comment',
         {
