@@ -1,10 +1,11 @@
-import 'dotenv/config'
+import { envSet } from './utils/envset.js'
 import express from 'express'
 import morgan from 'morgan'
 import { authRouter } from './routers/auth.js'
 import { sequelizeLoader } from './loaders/sequelize.js'
 
 const app = express()
+envSet()
 
 app.use(morgan('dev'))
 

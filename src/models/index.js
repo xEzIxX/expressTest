@@ -1,9 +1,11 @@
-import 'dotenv/config'
+import { envSet } from '../utils/envset.js'
 import { Sequelize, DataTypes } from 'sequelize'
 
 import { User } from './user.js'
 import { Board } from './board.js'
 import { Comment } from './comment.js'
+
+envSet()
 
 const db = {}
 
