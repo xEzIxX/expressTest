@@ -2,7 +2,7 @@ import { Sequelize, DataTypes } from 'sequelize'
 import { User } from './user.js'
 import { Board } from './board.js'
 import { Comment } from './comment.js'
-import { development, production } from '../../config/config.js'
+import { development, production } from '../../config/sequelize.js'
 const config = process.env.NODE_ENV === 'development' ? development : production
 
 const db = {}
