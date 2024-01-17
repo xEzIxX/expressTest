@@ -1,22 +1,17 @@
-import { envSet } from '../utils/envset.js'
 import { Sequelize, DataTypes } from 'sequelize'
-
 import { User } from './user.js'
 import { Board } from './board.js'
 import { Comment } from './comment.js'
-
-envSet()
+import { development, production } from '../../config/config.js'
+const config = process.env.NODE_ENV === 'development' ? development : production
 
 const db = {}
 
 const sequelize = new Sequelize(
-    process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-        host: process.env.DB_HOST,
-        dialect: process.env.DB_DIALECT,
-    }
+    config.database,
+    config.username,
+    config.password,
+    config.options
 )
 
 db.sequelize = sequelize
