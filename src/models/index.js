@@ -2,16 +2,15 @@ import { Sequelize, DataTypes } from 'sequelize'
 import { User } from './user.js'
 import { Board } from './board.js'
 import { Comment } from './comment.js'
-import { development, production } from '../../config/sequelize.js'
-const config = process.env.NODE_ENV === 'development' ? development : production
+import { config } from '../config/sequelize.js'
 
 const db = {}
 
 const sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config.options
+    config().database,
+    config().username,
+    config().password,
+    config().options
 )
 
 db.sequelize = sequelize
