@@ -1,24 +1,34 @@
-import 'dotenv/config'
-const env = process.env;
+import dotenv from 'dotenv'
 
-const development = {
-  database: env.DB_NAME || 'database',
-  username: env.DB_USER || 'root',
-  password: env.DB_PASSWORD || 'password',
-  options : {
-    host: env.DB_HOST || 'localhost',
-    dialect: env.DB_DIALECT,
+export function config() {
+    let config
+
+    if (process.env.NODE_ENV === 'production') {
+        dotenv.config({ path: '.env.prod' })
+
+        config = {
+            database: process.env.DB_NAME || 'database',
+            username: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD || 'password',
+            options: {
+                host: process.env.DB_HOST || 'localhost',
+                dialect: process.env.DB_DIALECT,
+            },
+        }
+    } else if (process.env.NODE_ENV === 'development') {
+        dotenv.config({ path: '.env.dev' })
+
+        config = {
+            database: process.env.DB_NAME || 'database',
+            username: process.env.DB_USER || 'root',
+            password: process.env.DB_PASSWORD || 'password',
+            options: {
+                host: process.env.DB_HOST || 'localhost',
+                dialect: process.env.DB_DIALECT,
+            },
+        }
+    } else {
+        console.log('환경 세팅 실패')
     }
+    return config
 }
-
-const production = {
-  database: env.DB_NAME || 'database',
-  username: env.DB_USER || 'root',
-  password: env.DB_PASSWORD || 'password',
-  options : {
-    host: env.DB_HOST || 'localhost',
-    dialect: env.DB_DIALECT,
-    }
-}
-
-export {development, production}
