@@ -1,8 +1,8 @@
 import express from 'express'
-import { Auth } from '../services/auth.js'
+import { AuthService } from '../services/auth.js'
 
 const authRouter = express.Router()
-const authService = new Auth()
+const authService = new AuthService()
 
 authRouter.get('/', function (req, res) {
     try {

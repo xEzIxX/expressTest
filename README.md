@@ -26,6 +26,10 @@
 4. 댓글
 5. 방문자 및 조회수 통계 및 분석  
 
+## ERD
+![myERD](https://github.com/xEzIxX/expressTest/assets/128362224/46e39480-bd5b-4c69-bdab-4c0c6dacf005)
+
+
 ## 구현 기능
 
 
