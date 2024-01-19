@@ -6,8 +6,6 @@ import { Comment } from './comment.js'
 
 const db = {}
 
-//console.log('****** db이름 :', process.env.DB_NAME, config.database, '******')
-
 const sequelize = new Sequelize(
     config.database,
     config.username,

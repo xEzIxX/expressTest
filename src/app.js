@@ -17,6 +17,5 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(process.env.SECRET_PORT, () => {
-    //console.log('****** db이름 :', process.env.DB_NAME, '******')
     console.log('server is running~')
 })
