@@ -1,4 +1,4 @@
-import { config } from './config/sequelize.js'
+import './config/env.js'
 
 import express from 'express'
 import morgan from 'morgan'
@@ -16,6 +16,7 @@ app.use((err, req, res, next) => {
     res.status(404).send('Not Found')
 })
 
-app.listen(config().SECRET_PORT, () => {
+app.listen(process.env.SECRET_PORT, () => {
+    //console.log('****** db이름 :', process.env.DB_NAME, '******')
     console.log('server is running~')
 })

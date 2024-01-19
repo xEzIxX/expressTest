@@ -1,16 +1,18 @@
+import { config } from '../config/sequelize.js'
 import { Sequelize, DataTypes } from 'sequelize'
 import { User } from './user.js'
 import { Board } from './board.js'
 import { Comment } from './comment.js'
-import { config } from '../config/sequelize.js'
 
 const db = {}
 
+//console.log('****** db이름 :', process.env.DB_NAME, config.database, '******')
+
 const sequelize = new Sequelize(
-    config().database,
-    config().username,
-    config().password,
-    config().options
+    config.database,
+    config.username,
+    config.password,
+    config.options
 )
 
 db.sequelize = sequelize
