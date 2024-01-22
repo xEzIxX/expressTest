@@ -5,39 +5,57 @@ export class jwtAuth {
     async newToken(userEmail) {
         // access token 발급
 
-        return jwt.sign({ email: userEmail }, process.env.SECRET_KEY, {
-            expiresIn: '30m',
-            algorithm: 'SHA512',
-        }) // 만료시간 30분
+        try {
+            const accessTK = await jwt.sign(
+                { email: userEmail },
+                process.env.SECRET_KEY,
+                {
+                    expiresIn: '30m',
+                    algorithm: 'SHA512',
+                }
+            ) // callback 함수가 없으므로 sign은 동기적으로 실행, 문자열 jwt를 발급
+
+            return accessTK
+        } catch (err) {
+            return false
+        }
     }
 
     async verifyToken(token, user) {
         // access token 유효성 검사
 
-        let decoded = null
+        let decodedPayload = null
+        let result = {}
 
         try {
-            decoded = jwt.verify(token, process.env.SECRET_KEY)
-            return {
-                // token값이 유효하다면 디코딩된 userID 를 리턴
+            decodedPayload = await jwt.verify(token, process.env.SECRET_KEY)
+            result = {
+                // token값이 유효하다면 디코딩된 Payload 를 리턴
                 ok: true,
-                id: decoded.id,
+                Payload: decodedPayload,
             }
         } catch (err) {
-            return {
+            result = {
                 ok: false,
                 message: err.message,
             }
         }
+        return result
     }
 
     async refreshToken() {
         // refresh token 발급
-        return (refreshToken = jwt.sign({}, process.env.SECRET_KEY, {
-            // refresh token은 payload 없이 발급
-            expiresIn: '14d', // 보통 refresh token의 유효기간은 2주로 설정정
-            algorithm: 'SHA512',
-        }))
+        try {
+            const refreshTk = await jwt.sign({}, process.env.SECRET_KEY, {
+                // refresh token은 payload 없이 발급
+                expiresIn: '14d', // 보통 refresh token의 유효기간은 2주로 설정
+                algorithm: 'SHA512',
+            })
+
+            return refreshTk
+        } catch (err) {
+            return false
+        }
     }
 
     async refreshVerify(token, userID) {
@@ -52,7 +70,7 @@ export class jwtAuth {
         }
 
         try {
-            const refreshToken = getToken(userID) // DB에 userID로 조회하여 refresh token 가져오기
+            const refreshToken = await getToken(userID) // DB에 userID로 조회하여 refresh token 가져오기
             if (token === refreshToken) {
                 try {
                     jwt.verify(token, process.env.SECRET_KEY)
