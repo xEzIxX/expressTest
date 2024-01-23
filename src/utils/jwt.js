@@ -1,4 +1,4 @@
-import './config/env.js'
+import '../config/env.js'
 import jwt from 'jsonwebtoken'
 
 export class jwtAuth {

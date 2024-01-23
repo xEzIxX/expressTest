@@ -1,5 +1,5 @@
-import { getHash } from 'src/utils/crypto.js'
-import { jwtAuth } from 'src/utils/jwt.js'
+import { getHash } from '../utils/crypto.js'
+import { jwtAuth } from '../utils/jwt.js'
 
 export class AuthService {
     async login(user_email, password) {
