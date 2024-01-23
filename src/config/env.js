@@ -1,5 +1,7 @@
 import dotenv from 'dotenv'
 
+let path
+
 if (process.env.NODE_ENV === 'development') {
     path = '.env.dev'
 } else if (process.env.NODE_ENV === 'production') {
