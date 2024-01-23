@@ -1,58 +1,61 @@
 import { getHash } from 'src/utils/crypto.js'
+import { jwtAuth } from 'src/utils/jwt.js'
 
 export class AuthService {
-    async login() {
+    async login(user_email, password) {
+        // 로그인 함수
         try {
-            /* 로그인
-            1. 비밀번호 암호화
-            2. 입력된 아이디-> 암호화된 비밀번호를 데베에서 찾음, null이면 없는 아이디!(시퀄라이즈)
-            3. 세션 저장, 결과값 리턴
-            */
-
-            const { user_email, password } = receiveUser
+            if (user_email === null || password === null) return false // 입력된 정보가 없음
 
             const hashedPw = getHash(password)
 
-            const userLogin = await userObj.findOne({
+            const user = await userObj.findOne({
+                // 입력한 이메일에 맞는 유저 찾기
                 where: { user_email },
             })
 
-            // 만약 user_email이 존재하고 그 유저의 pw도 입력한 비밀번호와 일치하다면 true
-            const isValid = userLogin && hashedPw === userLogin.user_pw
+            // 유저가 존재하지 않거나 비밀번호가 올바르지 않은 경우 false
+            if (user === null || !(user.user_pw === hashedPw)) return false
 
-            return isValid
+            // 로그인 정보가 올바른 경우 access TK, refresh TK 발급
+            const accessToken = jwtAuth.newToken(user.user_id)
+            const refreshToken = jwtAuth.refreshToken()
+
+            // 시퀄라이즈 - refresh TK를 user 객체(DB)에 저장 (accessTK 유효기간이 끝나면 재발급 받는데 사용됨)
+            try {
+                await user.update(
+                    { freshTK: refreshToken },
+                    {
+                        where: {
+                            user_email: user.user_email,
+                        },
+                    }
+                )
+            } catch (err) {
+                false
+            }
+            // 생성된 accessTK 클라이언트에게 반환
+
+            return accessToken
         } catch (err) {
-            console.log('로그인 함수 실행 중 오류 발생', err)
+            return false
         }
     }
 
-    async signUp() {
+    async signUp(newUserDto) {
         try {
-            /* 회원 가입
-            1. 비밀번호 암호화
-            2. 유저 생성(시퀄라이즈 create)
-            */
-
-            // user의 회원 정보를 받는다
-            const {
-                user_id,
-                user_follow,
-                user_nickname,
-                user_email,
-                password,
-            } = receiveUser
-
-            const hashedPw = getHash(password)
+            const hashedPw = getHash(newUserDto.password)
 
             const newUser = await User.create({
-                user_id,
+                // 시퀄라이즈 create를 통해 새로운 유저의 정보 DB에 저장
+                user_user: newUserDto.user,
+                user_email: newUserDto.email,
                 user_pw: hashedPw,
-                user_follow,
-                user_nickname,
-                user_email,
+                user_name: newUserDto.name,
+                user_nickname: newUserDto.email,
             })
 
-            return newUser || false
+            return newUser
         } catch (err) {
             console.log('회원가입 함수 실행 중 발생', err)
         }
