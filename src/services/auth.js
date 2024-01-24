@@ -1,44 +1,39 @@
 import { getHash } from '../utils/crypto.js'
 import { jwtAuth } from '../utils/jwt.js'
+import { db } from '../models/index.js'
 
 export class AuthService {
     async login(user_email, password) {
         // 로그인 함수
         try {
-            if (user_email === null || password === null) return false // 입력된 정보가 없음
+            if (!user_email || !password) {
+                throw new Error(
+                    '이메일, 혹은 비밀번호가 모두 입력되지 않았습니다.'
+                )
+            }
 
             const hashedPw = getHash(password)
 
-            const user = await userObj.findOne({
+            const user = await db.User.findOne({
                 // 입력한 이메일에 맞는 유저 찾기
                 where: { user_email },
             })
 
-            // 유저가 존재하지 않거나 비밀번호가 올바르지 않은 경우 false
-            if (user === null || !(user.user_pw === hashedPw)) return false
+            // 유저가 존재하지 않거나 비밀번호가 올바르지 않은 경우 err
+            if (user === null || !(user.user_pw === hashedPw)) {
+                throw new Error('유저가 존재하지 않거나 비밀번호가 틀림')
+            }
+
+            const auth = new jwtAuth()
 
             // 로그인 정보가 올바른 경우 access TK, refresh TK 발급
-            const accessToken = jwtAuth.newToken(user.user_id)
-            const refreshToken = jwtAuth.refreshToken()
+            const accessToken = auth.newToken(user.user_id)
+            const refreshToken = auth.refreshToken()
 
-            // 시퀄라이즈 - refresh TK를 user 객체(DB)에 저장 (accessTK 유효기간이 끝나면 재발급 받는데 사용됨)
-            try {
-                await user.update(
-                    { freshTK: refreshToken },
-                    {
-                        where: {
-                            user_email: user.user_email,
-                        },
-                    }
-                )
-            } catch (err) {
-                false
-            }
-            // 생성된 accessTK 클라이언트에게 반환
-
-            return accessToken
+            return { accessToken, refreshToken }
         } catch (err) {
-            return false
+            console.log(err)
+            throw new Error('로그인 함수 실패')
         }
     }
 
@@ -46,18 +41,19 @@ export class AuthService {
         try {
             const hashedPw = getHash(newUserDto.password)
 
-            const newUser = await User.create({
+            const newUser = await db.User.create({
                 // 시퀄라이즈 create를 통해 새로운 유저의 정보 DB에 저장
-                user_user: newUserDto.user,
                 user_email: newUserDto.email,
                 user_pw: hashedPw,
                 user_name: newUserDto.name,
                 user_nickname: newUserDto.email,
             })
 
+            console.log(newUser)
             return newUser
         } catch (err) {
-            console.log('회원가입 함수 실행 중 발생', err)
+            console.error(err)
+            throw new Error('DB에 정보 저장 실패')
         }
     }
 }
