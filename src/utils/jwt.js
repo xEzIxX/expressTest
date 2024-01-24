@@ -2,7 +2,7 @@ import '../config/env.js'
 import jwt from 'jsonwebtoken'
 
 export class jwtAuth {
-    async newToken(userId) {
+    newToken(userId) {
         try {
             const accessTK = jwt.sign({ id: userId }, process.env.SECRET_KEY, {
                 expiresIn: '30m',
@@ -10,22 +10,22 @@ export class jwtAuth {
             }) // callback 함수가 없으므로 sign은 동기적으로 실행, 문자열 jwt를 발급
             return accessTK
         } catch (err) {
-            return false
+            throw new Error('access 토큰 발급 실패')
         }
     }
 
-    async verifyToken(token) {
+    verifyToken(token) {
         // access token 유효성 검사
 
         try {
             const result = jwt.verify(token, process.env.SECRET_KEY)
             return result
         } catch (err) {
-            return false
+            throw new Error('access 토큰 유효성 검사 실패')
         }
     }
 
-    async refreshToken() {
+    refreshToken() {
         // refresh token 발급
         try {
             const refreshTk = jwt.sign({}, process.env.SECRET_KEY, {
@@ -36,7 +36,7 @@ export class jwtAuth {
 
             return refreshTk
         } catch (err) {
-            return false
+            throw new Error('refresh 토큰 발급 실패')
         }
     }
 
@@ -64,7 +64,7 @@ export class jwtAuth {
                 return false
             }
         } catch (err) {
-            return false
+            throw new Error('refresh token 유효성 검사 실패')
         }
     }
 }
