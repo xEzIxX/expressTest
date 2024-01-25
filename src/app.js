@@ -13,6 +13,8 @@ app.use(morgan('dev'))
 
 app.use('/auth', authRouter)
 
+app.set('view engine', 'ejs')
+
 await sequelizeLoader()
 
 app.use((err, req, res, next) => {
