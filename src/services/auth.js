@@ -18,9 +18,8 @@ export class AuthService {
             } else {
                 // 로그인 정보가 올바른 경우 access TK발급
                 const auth = new jwtAuth()
-                const accessToken = auth.newToken(user.user_id)
-                auth.verifyToken(accessToken) // 유효하면 payload반환, 아니라면 throw err
-                //console.log('payload : ', auth.verifyToken(accessToken))
+                const accessToken = auth.newToken(user.user_id, user.user_nickname)
+                auth.verifyToken(accessToken) // 유효하면 복호화된 payload반환, 아니라면 throw err
 
                 return { accessToken }
             }
