@@ -13,17 +13,17 @@ authRouter.post(
     validate([body('email').notEmpty().isEmail(), body('password').notEmpty()]),
     wrapper(async (req, res) => {
         try {
-            const { email, password } = req.body // 사용자는 user_email, pw를 통해 로그인
+            const userDto = {
+                email: req.body.email,
+                password: req.body.password,
+            }
 
-            const { accessToken } = await authService.login(  // tk 발급
-                email,
-                password
-            )
+            const { accessToken } = await authService.login(userDto) // tk 발급
 
             // Response > Header > Authoriczation 필드에 검증된 토큰을 담아보내기
             res.setHeader('Authorization', `Bearer ${accessToken}`)
 
-            return res.status(201).json({
+            return res.status(200).json({
                 message: '로그인 성공',
             })
         } catch (err) {
@@ -48,8 +48,15 @@ authRouter.post(
             minNumbers: 1,
             minSymbols: 1,
         }),
-        body('name').notEmpty(),
-        body('nickname').notEmpty(),
+        body('checkPw').isStrongPassword({
+            minLength: 8,
+            minLowercase: 1,
+            minUppercase: 1,
+            minNumbers: 1,
+            minSymbols: 1,
+        }),
+        body('name').notEmpty().isString(),
+        body('nickname').notEmpty().isString(),
     ]),
 
     wrapper(async (req, res) => {
@@ -58,6 +65,7 @@ authRouter.post(
                 // 사용자에게 정보를 입력 받은 정보를 담은 newUserDto 객체 생성
                 email: req.body.email,
                 password: req.body.password,
+                checkPw: req.body.checkPw,
                 name: req.body.name,
                 nickname: req.body.nickname,
             }
@@ -67,7 +75,7 @@ authRouter.post(
             if (isCreated.result === false) {
                 res.status(404).send(isCreated)
             } else {
-                res.status(200).send(isCreated) // 유저 객체 생성 완료(회원가입 성공)
+                res.status(201).send(isCreated) // 유저 객체 생성 완료(회원가입 성공)
             }
         } catch (err) {
             throw err
@@ -80,16 +88,18 @@ authRouter.get(
     // 로그아웃
     wrapper(async (req, res) => {
         try {
-            const Token = req.headers.authorization
-            let isToken
+            const token = req.headers.authorization
 
-            Token === null ? (isToken = false) : (isToken = true)
+            const isToken = (token === null || token === undefined || token==='') ? false : true
 
             if (isToken) {
                 res.setHeader('Authorization', '')
-                //console.log('로그아웃 성공, 로그인 페이지로 이동합니다.')
-                res.redirect('../login')
+                console.log('로그아웃 성공, 로그인 페이지로 이동합니다.')
+                return res.redirect('../auth/login')
+            }else{
+                return res.send('로그인 상태가 아닙니다.')
             }
+
         } catch (err) {
             throw err
         }
