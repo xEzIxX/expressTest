@@ -72,10 +72,10 @@ authRouter.post(
 
             const newUser = await authService.signUp(newUserDto) // 데이터 베이스에 유저 객체 생성
 
-            if (newUser.result === false) {
-                res.status(404).send(newUser)
-            } else {
+            if (newUser.result === true) {
                 res.status(201).send(newUser) // 유저 객체 생성 완료(회원가입 성공)
+            } else {
+                res.status(404).send(newUser)
             }
         } catch (err) {
             throw err
@@ -90,7 +90,11 @@ authRouter.get(
         try {
             const token = req.headers.authorization
 
-            const isToken = (token === null || token === undefined || token==='') ? false : true
+            const isToken = !(
+                token === null ||
+                token === undefined ||
+                token === ''
+            )
 
             if (isToken) {
                 res.setHeader('Authorization', '')
