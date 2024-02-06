@@ -18,14 +18,17 @@ authRouter.post(
                 password: req.body.password,
             }
 
-            const { accessToken } = await authService.login(userDto) // tk 발급
+            const foundUser = await authService.login(userDto) // tk 발급
 
-            // Response > Header > Authoriczation 필드에 검증된 토큰을 담아보내기
-            res.setHeader('Authorization', `Bearer ${accessToken}`)
+            if (foundUser.result === true){
+                const accessToken = foundUser.accessToken
+                res.setHeader('Authorization', `Bearer ${accessToken}`)
 
-            return res.status(200).json({
-                message: '로그인 성공',
-            })
+                return res.send(foundUser.message)
+            }else{
+                return res.send(foundUser.message)
+            }
+
         } catch (err) {
             throw err
         }
@@ -73,9 +76,9 @@ authRouter.post(
             const newUser = await authService.signUp(newUserDto) // 데이터 베이스에 유저 객체 생성
 
             if (newUser.result === true) {
-                res.status(201).send(newUser) // 유저 객체 생성 완료(회원가입 성공)
+                return res.status(201).send(newUser.message) // 유저 객체 생성 완료(회원가입 성공)
             } else {
-                res.status(404).send(newUser)
+                return res.status(404).send(newUser.message)
             }
         } catch (err) {
             throw err
@@ -98,7 +101,6 @@ authRouter.get(
 
             if (isToken) {
                 res.setHeader('Authorization', '')
-                console.log('로그아웃 성공, 로그인 페이지로 이동합니다.')
                 return res.redirect('../auth/login')
             } else {
                 return res.send('로그인 상태가 아닙니다.')
