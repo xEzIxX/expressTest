@@ -19,9 +19,9 @@ export class AuthService {
                 const accessToken = newToken(user.user_id, user.user_nickname)
                 jwt.verify(accessToken, process.env.SECRET_AK_KEY) // 유효하지 않으면 throw err
 
-                return { accessToken }
+                return { result : true, message : '존재하는 회원', accessToken }
             } else if (user === null) {
-                throw err // 이메일, 비밀번호에 맞는 user가 존재하지 않음
+                return {result : false, message : '회원정보가 존재하지 않음'}
             } else {
                 throw err
             }
