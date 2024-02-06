@@ -15,19 +15,17 @@ export class AuthService {
                 where: { user_email: userDto.email, user_pw: hashedPw },
             })
 
-            if (user === null) { // 존재하지 않음
-                throw err
-            } else if (user === undefined) { // 비정상적인 case
-                throw err
-            } else {
-                // 로그인 정보가 올바른 경우 access TK발급
-                const accessToken = newToken(
-                    user.user_id,
-                    user.user_nickname
-                )
+            if (user instanceof db.User) {
+                // findOne은 로그인 정보가 올바른 경우 User 모델의 인스턴스 반환함
+                const accessToken = newToken(user.user_id, user.user_nickname)
                 jwt.verify(accessToken, process.env.SECRET_AK_KEY) // 유효하지 않으면 throw err
 
                 return { accessToken }
+
+            } else if (user === null) {
+                throw err //이메일, 비밀번호에 맞는 user가 존재하지 않음
+            } else {
+                throw err
             }
         } catch (err) {
             throw err
