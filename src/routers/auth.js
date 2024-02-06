@@ -33,7 +33,7 @@ authRouter.post(
 )
 
 authRouter.post(
-    // 회원가입, 유저 정보 데이터 베이스에 저장
+    // 회원가입
     '/sign',
 
     validate([
@@ -70,12 +70,12 @@ authRouter.post(
                 nickname: req.body.nickname,
             }
 
-            const isCreated = await authService.signUp(newUserDto) // 데이터 베이스에 유저 객체 생성
+            const newUser = await authService.signUp(newUserDto) // 데이터 베이스에 유저 객체 생성
 
-            if (isCreated.result === false) {
-                res.status(404).send(isCreated)
+            if (newUser.result === false) {
+                res.status(404).send(newUser)
             } else {
-                res.status(201).send(isCreated) // 유저 객체 생성 완료(회원가입 성공)
+                res.status(201).send(newUser) // 유저 객체 생성 완료(회원가입 성공)
             }
         } catch (err) {
             throw err
@@ -96,10 +96,9 @@ authRouter.get(
                 res.setHeader('Authorization', '')
                 console.log('로그아웃 성공, 로그인 페이지로 이동합니다.')
                 return res.redirect('../auth/login')
-            }else{
+            } else {
                 return res.send('로그인 상태가 아닙니다.')
             }
-
         } catch (err) {
             throw err
         }

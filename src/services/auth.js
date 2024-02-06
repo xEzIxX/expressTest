@@ -11,19 +11,17 @@ export class AuthService {
             const hashedPw = getHash(userDto.password)
 
             const user = await db.User.findOne({
-                // 입력한 이메일, 비밀번호에 맞는 유저 찾기
+                // findOne은 User 모델의 인스턴스 혹은 null을 반환,
                 where: { user_email: userDto.email, user_pw: hashedPw },
             })
 
             if (user instanceof db.User) {
-                // findOne은 로그인 정보가 올바른 경우 User 모델의 인스턴스 반환함
                 const accessToken = newToken(user.user_id, user.user_nickname)
                 jwt.verify(accessToken, process.env.SECRET_AK_KEY) // 유효하지 않으면 throw err
 
                 return { accessToken }
-
             } else if (user === null) {
-                throw err //이메일, 비밀번호에 맞는 user가 존재하지 않음
+                throw err // 이메일, 비밀번호에 맞는 user가 존재하지 않음
             } else {
                 throw err
             }
@@ -43,16 +41,15 @@ export class AuthService {
             }
             const hashedPw = getHash(newUserDto.password)
 
-            const existEmail = await db.User.findOne({
+            const foundEmail = await db.User.findOne({
                 where: { user_email: newUserDto.email },
             })
-            // console.log(existEmail)
-            const existNickname = await db.User.findOne({
+
+            const foundNickname = await db.User.findOne({
                 where: { user_nickname: newUserDto.nickname },
             })
-            // console.log(existNickname)
 
-            if (existEmail === null && existNickname === null) {
+            if (foundEmail === null && foundNickname === null) {
                 await db.User.create({
                     // 시퀄라이즈 create를 통해 새로운 유저의 정보 DB에 저장
                     user_email: newUserDto.email,
@@ -65,9 +62,9 @@ export class AuthService {
             } else {
                 let falseMessage
 
-                if (existEmail === null && existNickname !== null) {
+                if (foundEmail === null && foundNickname !== null) {
                     falseMessage = '중복된 닉네임'
-                } else if (existEmail !== null && existNickname === null) {
+                } else if (foundEmail !== null && foundNickname === null) {
                     falseMessage = '중복된 이메일'
                 } else falseMessage = '중복된 닉네임과 이메일'
 
