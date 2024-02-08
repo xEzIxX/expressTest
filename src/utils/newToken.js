@@ -5,7 +5,7 @@ export function newToken(userId, userNickname) {
         // payload에 사용자의 id, nickname을 넣어준다.
         try {
             return jwt.sign(
-                { user_id: userId, user_nickname: userNickname },
+                { userId: userId, userNickname: userNickname },
                 process.env.SECRET_AK_KEY,
                 {
                     algorithm: 'HS512',
