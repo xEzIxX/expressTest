@@ -6,6 +6,12 @@ import { authRouter } from './routers/auth.js'
 import { sequelizeLoader } from './loaders/sequelize.js'
 const app = express()
 
+app.set('view engine', 'ejs')
+app.set('views', './src/views')
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+
 app.use(morgan('dev'))
 
 app.use('/auth', authRouter)
