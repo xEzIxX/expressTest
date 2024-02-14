@@ -19,9 +19,17 @@ export class AuthService {
                 const accessToken = newToken(user.user_id, user.user_nickname)
                 jwt.verify(accessToken, process.env.SECRET_AK_KEY) // 유효하지 않으면 throw err
 
-                return { result : true, message : '존재하는 회원', accessToken }
+                return {
+                    result: true,
+                    message: '존재하는 회원',
+                    token: accessToken,
+                }
             } else if (user === null) {
-                return {result : false, message : '회원정보가 존재하지 않음'}
+                return {
+                    result: false,
+                    message: '회원정보가 존재하지 않음',
+                    token: null,
+                }
             } else {
                 throw err
             }
@@ -58,7 +66,25 @@ export class AuthService {
                     user_nickname: newUserDto.nickname,
                 })
 
-                return { result: true, message: '회원가입' }
+                const foundCreated = await db.User.findOne({
+                    where: {
+                        user_email: newUserDto.email,
+                        user_pw: hashedPw,
+                        user_name: newUserDto.name,
+                        user_nickname: newUserDto.nickname,
+                    },
+                })
+
+                if (foundCreated instanceof db.User) {
+                    return { result: true, message: '회원가입' }
+                } else if (foundCreated === null) {
+                    return {
+                        result: false,
+                        message: '회원가입 중 회원정보 저장 실패',
+                    }
+                } else {
+                    throw err
+                }
             } else {
                 let falseMessage
 
