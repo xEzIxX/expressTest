@@ -117,7 +117,7 @@ authRouter.get(
 
             if (isToken === true) {
                 res.setHeader('Authorization', '')
-                return res.redirect('../auth/login')
+                return res.send('로그아웃') /// 'auth/login' 경로로 이동
             } else if (isToken === false) {
                 return res.send('로그인 상태가 아닙니다.')
             } else {
