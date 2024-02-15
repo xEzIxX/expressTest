@@ -9,7 +9,7 @@ const authService = new AuthService()
 
 // 로그인 페이지
 authRouter.get('/login', (req, res) => {
-    return res.render('login.ejs')
+    return res.render('../views/auth/login.ejs')
 })
 
 authRouter.post(
@@ -44,7 +44,7 @@ authRouter.post(
 // 회원가입
 authRouter.get('/sign', (req, res) => {
     try {
-        return res.render('sign.ejs')
+        return res.render('../views/auth/sign.ejs')
     } catch {
         throw err
     }
