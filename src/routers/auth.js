@@ -36,7 +36,7 @@ authRouter.post(
             }
         } catch (err) {
             console.log(err)
-            throw err
+            // throw err
         }
     })
 )
@@ -46,7 +46,8 @@ authRouter.get('/sign', (req, res) => {
     try {
         return res.render('auth/sign.ejs')
     } catch {
-        throw err
+        console.log(err)
+        // throw err
     }
 })
 
@@ -97,7 +98,8 @@ authRouter.post(
                 return res.status(500).send('서버 오류')
             }
         } catch (err) {
-            throw err
+            console.log(err)
+            // throw err
         }
     })
 )
@@ -118,7 +120,8 @@ authRouter.get(
                 return res.status(500).send('로그아웃 실패')
             }
         } catch (err) {
-            throw err
+            console.log(err)
+            // throw err
         }
     })
 )
