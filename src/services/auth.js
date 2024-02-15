@@ -66,7 +66,7 @@ export class AuthService {
                     user_nickname: newUserDto.nickname,
                 })
 
-                const foundCreated = await db.User.findOne({
+                const createdResult = await db.User.findOne({
                     where: {
                         user_email: newUserDto.email,
                         user_pw: hashedPw,
@@ -75,26 +75,26 @@ export class AuthService {
                     },
                 })
 
-                if (foundCreated instanceof db.User) {
-                    return { result: true, message: '회원가입' }
-                } else if (foundCreated === null) {
+                if (createdResult instanceof db.User) {
+                    return { result: true, message: '회원가입 완료' }
+                } else if (createdResult === null) {
                     return {
                         result: false,
-                        message: '회원가입 중 회원정보 저장 실패',
+                        message: '회원가입 실패',
                     }
                 } else {
                     throw err
                 }
             } else {
-                let falseMessage
+                let message
 
                 if (foundEmail === null && foundNickname !== null) {
-                    falseMessage = '중복된 닉네임'
+                    message = '중복된 닉네임'
                 } else if (foundEmail !== null && foundNickname === null) {
-                    falseMessage = '중복된 이메일'
-                } else falseMessage = '중복된 닉네임과 이메일'
+                    message = '중복된 이메일'
+                } else message = '중복된 닉네임과 이메일'
 
-                return { result: false, message: falseMessage }
+                return { result: false, message: message }
             }
         } catch (err) {
             throw err
