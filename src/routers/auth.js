@@ -32,7 +32,7 @@ authRouter.post(
             } else if (foundUser.result === false) {
                 return res.status(401).send(foundUser) // 잘못된 회원 정보 입력
             } else {
-                throw err
+                return res.status(500).send('서버 오류')
             }
         } catch (err) {
             console.log(err)
@@ -94,7 +94,7 @@ authRouter.post(
             } else if (newUser.result === false) {
                 return res.status(404).send(newUser)
             } else {
-                throw err
+                return res.status(500).send('서버 오류')
             }
         } catch (err) {
             throw err
@@ -117,11 +117,11 @@ authRouter.get(
 
             if (isToken === true) {
                 res.setHeader('Authorization', '')
-                return res.send('로그아웃') /// 'auth/login' 경로로 이동
+                return res.status(200).send('로그아웃 성공') /// 'auth/login' 경로로 이동
             } else if (isToken === false) {
-                return res.send('로그인 상태가 아닙니다.')
+                return res.status(401).send('로그인 상태가 아님')
             } else {
-                throw err
+                return res.status(500).send('로그아웃 실패')
             }
         } catch (err) {
             throw err

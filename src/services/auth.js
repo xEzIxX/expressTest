@@ -27,11 +27,11 @@ export class AuthService {
             } else if (user === null) {
                 return {
                     result: false,
-                    message: '회원정보가 존재하지 않음',
+                    message: '존재하지 않는 회원',
                     token: null,
                 }
             } else {
-                throw err
+                return { result: false, message: '서비스 오류', token: null }
             }
         } catch (err) {
             throw err
@@ -83,7 +83,7 @@ export class AuthService {
                         message: '회원가입 실패',
                     }
                 } else {
-                    throw err
+                    return { result: false, message: '서비스 오류' }
                 }
             } else {
                 let message
@@ -94,7 +94,7 @@ export class AuthService {
                     message = '중복된 이메일'
                 } else message = '중복된 닉네임과 이메일'
 
-                return { result: false, message: message }
+                return { result: false, message }
             }
         } catch (err) {
             throw err
