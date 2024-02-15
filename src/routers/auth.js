@@ -107,13 +107,7 @@ authRouter.get(
     '/logout',
     wrapper(async (req, res) => {
         try {
-            const token = req.headers.authorization
-
-            const isToken = !(
-                token === null ||
-                token === undefined ||
-                token === ''
-            )
+            const isToken = Boolean(req.headers.authorization)
 
             if (isToken === true) {
                 res.setHeader('Authorization', '')
