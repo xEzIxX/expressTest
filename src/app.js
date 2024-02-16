@@ -18,7 +18,8 @@ app.set('view engine', 'ejs')
 await sequelizeLoader()
 
 app.use((err, req, res, next) => {
-    res.status(404).send('Not Found')
+    console.log(err)
+    res.status(500).send({message : '서버 오류'})
 })
 
 app.listen(process.env.SECRET_PORT, () => {

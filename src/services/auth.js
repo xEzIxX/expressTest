@@ -34,8 +34,7 @@ export class AuthService {
                 return { result: false, message: '서비스 오류', token: null }
             }
         } catch (err) {
-            console.log(err)
-            // throw err
+            throw err
         }
     }
 
@@ -98,8 +97,7 @@ export class AuthService {
                 return { result: false, falseMessage }
             }
         } catch (err) {
-            console.log(err)
-            // throw err
+            throw err
         }
     }
 }
