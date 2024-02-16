@@ -87,15 +87,15 @@ export class AuthService {
                     return { result: false, message: '서비스 오류' }
                 }
             } else {
-                let message
+                let falseMessage
 
                 if (foundEmail === null && foundNickname !== null) {
-                    message = '중복된 닉네임'
+                    falseMessage = '중복된 닉네임'
                 } else if (foundEmail !== null && foundNickname === null) {
-                    message = '중복된 이메일'
-                } else message = '중복된 닉네임과 이메일'
+                    falseMessage = '중복된 이메일'
+                } else falseMessage = '중복된 닉네임과 이메일'
 
-                return { result: false, message }
+                return { result: false, falseMessage }
             }
         } catch (err) {
             console.log(err)
