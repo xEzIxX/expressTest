@@ -28,12 +28,12 @@ authRouter.post(
                 const accessToken = foundUser.token
                 res.setHeader('Authorization', `Bearer ${accessToken}`) // 로그인 시 access 토큰 발급
 
-                return res.status(200).send(foundUser) 
-                //header에는 Bearer가 토큰 앞에 존재하지만, foundUser.token에는 토큰만 존재
+                return res.status(200).send(foundUser)
+                // header에는 Bearer가 토큰 앞에 존재하지만, foundUser.token에는 토큰만 존재
             } else if (foundUser.result === false) {
                 return res.status(401).send(foundUser) // 잘못된 로그인 정보 입력
             } else {
-                return res.status(500).send({message : '서버 오류'})
+                return res.status(500).send({ message: '서버 오류' })
             }
         } catch (err) {
             throw err
@@ -93,7 +93,7 @@ authRouter.post(
             } else if (newUser.result === false) {
                 return res.status(404).send(newUser)
             } else {
-                return res.status(500).send({message :'서버 오류'})
+                return res.status(500).send({ message: '서버 오류' })
             }
         } catch (err) {
             throw err

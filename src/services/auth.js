@@ -18,13 +18,14 @@ export class AuthService {
             if (user instanceof db.User) {
                 const accessToken = newToken(user.user_id, user.user_nickname)
 
-                if (Boolean(accessToken) === true) { // access토큰이 정상적으로 발급 되었다면
+                if (Boolean(accessToken) === true) {
+                    // access토큰이 정상적으로 발급 되었다면
                     return {
                         result: true,
                         message: '존재하는 회원',
                         token: accessToken,
                     }
-                } else { 
+                } else {
                     return {
                         result: false,
                         message: '토큰 발행 오류',
