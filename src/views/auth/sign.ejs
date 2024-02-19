@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>회원가입</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container overflow-hidden text-center p-3">
+        <h1>회원가입</h1>
+
+            <div class="row g-3 align-items-center p-3">
+                <div class="col-4">
+                    <label for="emailInput" class="form-label">이메일</label>
+                </div>
+                <div class="col-8">
+                    <input type="email" name="email" class="form-control" id="emailInput" placeholder="이메일">
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center p-3">
+                <div class="col-4">
+                    <label for="passwordInput" class="form-label">비밀번호</label>
+                </div>
+                <div class="col-8">
+                    <input type="password" name="password" id="passwordInput" class="form-control" aria-describedby="passwordHelpInline" placeholder="비밀번호">
+                </div>
+                <div class="col-12">
+                    <span id="passwordHelpInline" class="form-text">
+                        '8자 이상, 대소문자, 숫자, 특수문자를 적어도 하나씩 포함'
+                    </span>
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center p-3">
+                <div class="col-4">
+                    <label for="checkPwInput" class="form-label">비밀번호 확인</label>
+                </div>
+                <div class="col-8">
+                    <input type="password" name="checkPw" id="checkPwInput" class="form-control" aria-describedby="checkPwHelpInline" placeholder="비밀번호">
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center p-3">
+                <div class="col-4">
+                    <label for="nameInput" class="form-label">이름</label>
+                </div>
+                <div class="col-8">
+                    <input type="text" name="name" class="form-control" id="nameInput" placeholder="이름">
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center p-3">
+                <div class="col-4">
+                    <label for="nicknameInput" class="form-label">닉네임</label>
+                </div>
+                <div class="col-8">
+                    <input type="text" name="nickname" class="form-control" id="nicknameInput" placeholder="닉네임">
+                </div>
+            </div>
+
+            <div class="row p-3">
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-success" onclick= "performSign()">회원가입</button>
+                </div>
+            </div>
+
+    </div>
+    <script>
+        async function performSign() {
+            try {
+                // 사용자가 입력한 이메일과 비밀번호 가져오기
+                const email = document.getElementById('emailInput').value;
+                const password = document.getElementById('passwordInput').value;
+                const checkPw = document.getElementById('checkPwInput').value;
+                const name = document.getElementById('nameInput').value;
+                const nickname = document.getElementById('nicknameInput').value;
+
+                //alert('email : '+email+' name, nickname '+name+nickname)
+
+                // API에 전송할 데이터
+                const data = {
+                    email: email,
+                    password: password,
+                    checkPw : checkPw,
+                    name : name,
+                    nickname : nickname
+                };
+                alert('email data is : '+data.email+data.name+data.nickname)
+
+                // API에 POST 요청 보내기
+                const response = await fetch('/auth/sign', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) { // 에러 상태를 처리 : response.ok가 true이면, 응답 상태 코드가 200번대(성공)
+                    const errorMessage = await response.text();
+                    alert(`회원가입 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
+                    return ;
+                }
+
+                // 응답 결과 JSON으로 파싱
+                const result = await response.json();
+                //const result = await response.text();
+
+                alert(`send한 문자열을 받아옵니다. : ${result.message}`);
+                alert(`회원가입 성공 여부 : ${result.result}`);
+                //alert(`회원가입 성공 여부 : ${result.result}, ${result.message}`);
+
+                if(result.result === true){
+                    document.location.href = "/auth/login" // 회원가입 성공 시 로그인 페이지로 이동
+                }
+
+            } catch (error) {
+                throw(err)
+                console.error('에러 발생:', error);
+            }
+            
+        }
+
+    </script>
+</body>
+
+</html>
