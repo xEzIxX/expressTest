@@ -19,7 +19,7 @@ await sequelizeLoader()
 
 app.use((err, req, res, next) => {
     console.log(err)
-    res.status(500).send({message : '서버 오류'})
+    res.status(500).send({ message: '서버 오류' })
 })
 
 app.listen(process.env.SECRET_PORT, () => {

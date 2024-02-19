@@ -7,7 +7,7 @@ import { validate } from '../utils/validate.js'
 export const authRouter = express.Router()
 const authService = new AuthService()
 
-// 로그인 페이지
+// 로그인
 authRouter.get('/login', (req, res) => {
     return res.render('auth/login.ejs')
 })
@@ -26,11 +26,11 @@ authRouter.post(
 
             if (foundUser.result === true) {
                 const accessToken = foundUser.token
-                res.setHeader('Authorization', `Bearer ${accessToken}`)
+                res.setHeader('Authorization', `Bearer ${accessToken}`) // 로그인 시 access 토큰 발급
 
                 return res.status(200).send(foundUser)
             } else if (foundUser.result === false) {
-                return res.status(401).send(foundUser) // 잘못된 회원 정보 입력
+                return res.status(401).send(foundUser) // 잘못된 로그인 정보 입력
             } else {
                 return res.status(500).send('서버 오류')
             }
@@ -74,7 +74,6 @@ authRouter.post(
         body('name').notEmpty().isString(),
         body('nickname').notEmpty().isString(),
     ]),
-
     wrapper(async (req, res) => {
         try {
             const newUserDto = {
@@ -89,7 +88,7 @@ authRouter.post(
             const newUser = await authService.signUp(newUserDto) // 데이터 베이스에 유저 객체 생성
 
             if (newUser.result === true) {
-                return res.status(201).send(newUser) // 유저 객체 생성 완료(회원가입 성공)
+                return res.status(201).send(newUser) // 유저 객체 생성 완료 (회원가입 성공)
             } else if (newUser.result === false) {
                 return res.status(404).send(newUser)
             } else {
@@ -110,11 +109,11 @@ authRouter.get(
 
             if (isToken === true) {
                 res.setHeader('Authorization', '')
-                return res.status(200).send({message : '로그아웃 성공'})
+                return res.status(200).send({ message: '로그아웃 성공' })
             } else if (isToken === false) {
-                return res.status(401).send({message : '로그인 상태가 아님'})
+                return res.status(401).send({ message: '로그인 상태가 아님' })
             } else {
-                return res.status(500).send({message : '로그아웃 실패'})
+                return res.status(500).send({ message: '로그아웃 실패' })
             }
         } catch (err) {
             throw err
