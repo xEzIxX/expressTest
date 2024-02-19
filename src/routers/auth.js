@@ -111,10 +111,8 @@ authRouter.get(
             if (isToken === true) {
                 res.setHeader('Authorization', '')
                 return res.status(200).send({ message: '로그아웃 성공' })
-            } else if (isToken === false) {
-                return res.status(401).send({ message: '로그인 상태가 아님' })
             } else {
-                return res.status(500).send({ message: '로그아웃 실패' })
+                return res.status(401).send({ message: '로그인 상태가 아님' })
             }
         } catch (err) {
             throw err
