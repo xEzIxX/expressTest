@@ -17,7 +17,6 @@ export class AuthService {
 
             if (user instanceof db.User) {
                 const accessToken = newToken(user.user_id, user.user_nickname)
-                jwt.verify(accessToken, process.env.SECRET_KEY) // 유효하지 않으면 throw err
 
                 return {
                     result: true,
