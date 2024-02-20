@@ -40,12 +40,11 @@ boardRouter.post(
             const createdBoard = await boardService.createNewBoard(boardDto) // 작성된 글 저장 서비스 함수
 
             if (createdBoard.result === true) {
-                return res.status(201).json(createdBoard)
+                return res.status(201).send(createdBoard)
             } else {
-                return res.status(400).json(createdBoard)
+                return res.status(400).send(createdBoard)
             }
         } catch (err) {
-            console.log(err)
             throw err
         }
     })
@@ -68,7 +67,7 @@ boardRouter.get(
                 return res.status(200).send(original)
                 // return res.status(200).render('board/edit.ejs', {result: original})
             } else {
-                return res.status(401).send('권한없음')
+                return res.status(401).send({message : '권한없음'})
             }
         } catch (err) {
             throw err
@@ -170,7 +169,7 @@ boardRouter.delete(
                     return res.status(404).send(deletion)
                 }
             } else {
-                return res.status(401).send('권한 없음')
+                return res.status(401).send({message : '권한 없음'})
             }
         } catch (err) {
             throw err
