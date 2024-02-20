@@ -13,13 +13,12 @@ export class BoardService {
             if (createdResult instanceof db.Board) {
                 return {
                     result: true,
-                    message: '작성된 내용을 데이터베이스에 저장하였습니다!',
+                    message: '게시글 저장 성공',
                 }
             } else {
                 return {
                     result: false,
-                    message:
-                        '작성된 내용을 데이터베이스에 저장하지 못하였습니다.',
+                    message: '게시글 저장 실패',
                 }
             }
         } catch (err) {
@@ -33,12 +32,26 @@ export class BoardService {
         try {
             const original = await db.Board.findOne({
                 where: { board_id: boardId },
-            })
+            }) // 반환객체 : Board{ dataValues: {}, _previousDataValues: {}, ... }
 
             if (original instanceof db.Board) {
-                return original
+                return {
+                    result: true,
+                    message: '게시글 반환 성공',
+                    data: original.dataValues,
+                }
+            } else if (original === null) {
+                return {
+                    result: false,
+                    message: '게시글 반환 실패',
+                    data: null,
+                }
             } else {
-                return false
+                return {
+                    result: false,
+                    message: '게시글 반환 오류',
+                    data: null,
+                }
             }
         } catch (err) {
             throw err
@@ -74,12 +87,9 @@ export class BoardService {
     async getBoardById(boardId) {
         // 게시글 아이디 boardId와 일치하는 게시글 데이터 반환
         try {
-            console.log('서비스 함수 시작')
             const foundBoard = await db.Board.findOne({
                 where: { board_id: boardId },
             })
-
-            console.log('시퀄라이즈 결과  : ', foundBoard instanceof db.Board)
 
             if (foundBoard instanceof db.Board) {
                 return {
@@ -94,7 +104,11 @@ export class BoardService {
                     data: null,
                 }
             } else {
-                throw err
+                return {
+                    result: false,
+                    message: '페이지 조회 오류',
+                    data: null,
+                }
             }
         } catch (err) {
             throw err
@@ -104,10 +118,12 @@ export class BoardService {
     async deleteBoardById(boardId) {
         // 게시글 아이디 boardId와 일치하는 게시글 데이터 삭제
         try {
+            console.log(boardId)
             const deletedRowNum = await db.Board.destroy({
                 where: { board_id: boardId },
-            }) // 반환값 : 삭제된 열의 갯수
-            // console.log('*********삭제된 열의 갯수 : ', deletedRowNum)
+            })
+
+            // console.log('삭제된 열의 갯수 : ', deletedRowNum)
 
             if (deletedRowNum > 0) {
                 return { result: true, message: '삭제 성공' }
