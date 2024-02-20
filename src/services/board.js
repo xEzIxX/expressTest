@@ -1,23 +1,23 @@
 import { db } from '../models/index.js'
 
 export class BoardService {
-    async getPostById(boardId) {
+    async getBoardById(boardId) {
         // 게시판 아이디 boardId와 일치하는 것 반환
         try {
             console.log('서비스 함수 시작')
-            const foundPost = await db.Board.findOne({
+            const foundBoard = await db.Board.findOne({
                 where: { board_id: boardId },
             })
 
-            console.log('시퀄라이즈 결과  : ', foundPost instanceof db.Board)
+            console.log('시퀄라이즈 결과  : ', foundBoard instanceof db.Board)
 
-            if (foundPost instanceof db.Board) {
+            if (foundBoard instanceof db.Board) {
                 return {
                     result: true,
                     message: '페이지 조회 성공',
-                    data: foundPost,
+                    data: foundBoard,
                 }
-            } else if (foundPost === null) {
+            } else if (foundBoard === null) {
                 return {
                     result: false,
                     message: '페이지 조회 실패',
@@ -31,7 +31,7 @@ export class BoardService {
         }
     }
 
-    async deletePostById(boardId) {
+    async deleteBoardById(boardId) {
         try {
             const deletedRowNum = await db.Board.destroy({
                 where: { board_id: boardId },
@@ -48,14 +48,14 @@ export class BoardService {
         }
     }
 
-    async createNewPost(postDto) {
+    async createNewBoard(boardDto) {
         // 작성된 글 저장 서비스 함수
         try {
             const createdResult = await db.Board.create({
                 // 시퀄라이즈 create를 통해 새로운 유저의 정보 DB에 저장
-                board_title: postDto.title,
-                board_content: postDto.content,
-                board_user_id: postDto.userid,
+                board_title: BoardDto.title,
+                board_content: BoardDto.content,
+                board_user_id: BoardDto.userid,
             })
 
             if (createdResult instanceof db.Board) {
@@ -76,7 +76,7 @@ export class BoardService {
         }
     }
 
-    async getOriginalPostById(boardId) {
+    async getOriginalBoardById(boardId) {
         // 수정을 위한 원본 불러오기
         try {
             const original = await db.Board.findOne({
@@ -94,7 +94,7 @@ export class BoardService {
         }
     }
 
-    async updatePostById(boardId, title, content) {
+    async updateBoardById(boardId, title, content) {
         // 수정한 데이터 다시 저장하기
         try {
             const result = await db.Board.update(

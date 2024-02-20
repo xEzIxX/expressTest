@@ -11,21 +11,21 @@ import { isPasswordValid } from '../utils/isPasswordValid.js'
 export const boardRouter = express.Router()
 const boardService = new BoardService()
 
-// [ /board/post ] : get 글 조회, delete 글 삭제
+// [ /board/board ] : get 글 조회, delete 글 삭제
 
 boardRouter.get(
-    '/post/:postId',
+    '/board/:boardId',
     // 글 조회
     wrapper(async (req, res) => {
         try {
-            const postId = req.params.postId.split(':')[1]
+            const boardId = req.params.boardId.split(':')[1]
 
-            const post = await boardService.getPostById(postId) // 게시판 아이디 postId와 일치하는 글 갖고옴
+            const board = await boardService.getboardById(boardId) // 게시판 아이디 boardId와 일치하는 글 갖고옴
 
-            if (post.result === true) {
-                return res.status(200).send(post) // 그 글 페이지의 데이터, 화면을 보여줘야함
+            if (board.result === true) {
+                return res.status(200).send(board) // 그 글 페이지의 데이터, 화면을 보여줘야함
             } else {
-                return res.status(404).send(post)
+                return res.status(404).send(board)
             }
         } catch (err) {
             throw err
@@ -34,10 +34,10 @@ boardRouter.get(
 )
 
 boardRouter.delete(
-    '/post',
+    '/board',
     // 글 삭제
     validate([
-        body('postId').notEmpty(),
+        body('boardId').notEmpty(),
         body(
             'password',
             '비밀번호는 8자 이상, 대소문자, 숫자, 특수문자를 적어도 하나씩 포함해야합니다.'
@@ -58,7 +58,7 @@ boardRouter.delete(
     ]),
     wrapper(async (req, res) => {
         try {
-            const postId = req.body.postId
+            const boardId = req.body.boardId
             const password = req.body.password
 
             const token = req.headers.authorization.split(' ')[1]
@@ -69,7 +69,7 @@ boardRouter.delete(
 
             if (isValid) {
                 const deletion = await boardService.deleteBoardById(
-                    postId,
+                    boardId,
                     decoded.user_id
                 )
                 if (deletion.result === true) {
@@ -86,38 +86,38 @@ boardRouter.delete(
     })
 )
 
-// [ /board/post/form ] : get 글 작성, post 글 작성
+// [ /board/board/form ] : get 글 작성, board 글 작성
 boardRouter.get(
-    '/post/form',
+    '/board/form',
     wrapper(async (req, res) => {
         try {
-            return res.send('postForm.ejs')
+            return res.send('boardForm.ejs')
         } catch (err) {
             throw err
         }
     })
 )
 
-boardRouter.post(
-    '/post/form',
+boardRouter.board(
+    '/board/form',
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
         try {
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.SECRET_AK_KEY)
 
-            const postDto = {
+            const boardDto = {
                 title: req.body.title,
                 content: req.body.content,
                 userid: decoded.user_id,
             }
 
-            const createdPost = await boardService.createNewPost(postDto) // 작성된 글 저장 서비스 함수
+            const createdboard = await boardService.createNewboard(boardDto) // 작성된 글 저장 서비스 함수
 
-            if (createdPost.result === true) {
-                return res.status(201).json(createdPost.message)
+            if (createdboard.result === true) {
+                return res.status(201).json(createdboard.message)
             } else {
-                return res.status(400).json(createdPost.message)
+                return res.status(400).json(createdboard.message)
             }
         } catch (err) {
             console.log(err)
@@ -128,16 +128,16 @@ boardRouter.post(
 
 // [ /board/edit ] : get 글 편집, put 글 편집
 boardRouter.get(
-    '/post/edit',
-    validate([body('postId').notEmpty()]),
+    '/board/edit',
+    validate([body('boardId').notEmpty()]),
     wrapper(async (req, res) => {
         try {
-            const postId = req.body.postId
+            const boardId = req.body.boardId
 
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.SECRET_AK_KEY)
 
-            const original = await boardService.getOriginalPostById(postId)
+            const original = await boardService.getOriginalboardById(boardId)
 
             if (decoded.user_id === original.board_user_id) {
                 return res.status(200).send(original)
@@ -152,17 +152,17 @@ boardRouter.get(
 )
 
 boardRouter.put(
-    '/post/edit',
+    '/board/edit',
     // 글 편집
     validate([
-        body('postId').notEmpty(),
+        body('boardId').notEmpty(),
         body('title').notEmpty(),
         body('content').notEmpty(),
     ]),
     wrapper(async (req, res) => {
         try {
-            const updateResult = await boardService.updatePostById(
-                req.body.postId,
+            const updateResult = await boardService.updateboardById(
+                req.body.boardId,
                 req.body.title,
                 req.body.content
             )
