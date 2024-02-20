@@ -1,61 +1,14 @@
 import { db } from '../models/index.js'
 
 export class BoardService {
-    async getBoardById(boardId) {
-        // 게시판 아이디 boardId와 일치하는 것 반환
-        try {
-            console.log('서비스 함수 시작')
-            const foundBoard = await db.Board.findOne({
-                where: { board_id: boardId },
-            })
-
-            console.log('시퀄라이즈 결과  : ', foundBoard instanceof db.Board)
-
-            if (foundBoard instanceof db.Board) {
-                return {
-                    result: true,
-                    message: '페이지 조회 성공',
-                    data: foundBoard,
-                }
-            } else if (foundBoard === null) {
-                return {
-                    result: false,
-                    message: '페이지 조회 실패',
-                    data: null,
-                }
-            } else {
-                throw err
-            }
-        } catch (err) {
-            throw err
-        }
-    }
-
-    async deleteBoardById(boardId) {
-        try {
-            const deletedRowNum = await db.Board.destroy({
-                where: { board_id: boardId },
-            }) // 반환값 : 삭제된 열의 갯수
-            // console.log('*********삭제된 열의 갯수 : ', deletedRowNum)
-
-            if (deletedRowNum > 0) {
-                return { result: true, message: '삭제 성공' }
-            } else {
-                return { result: false, message: '삭제 실패' }
-            }
-        } catch (err) {
-            throw err
-        }
-    }
-
     async createNewBoard(boardDto) {
         // 작성된 글 저장 서비스 함수
         try {
             const createdResult = await db.Board.create({
                 // 시퀄라이즈 create를 통해 새로운 유저의 정보 DB에 저장
-                board_title: BoardDto.title,
-                board_content: BoardDto.content,
-                board_user_id: BoardDto.userid,
+                board_title: boardDto.title,
+                board_content: boardDto.content,
+                board_user_id: boardDto.userid,
             })
 
             if (createdResult instanceof db.Board) {
@@ -114,6 +67,53 @@ export class BoardService {
                 return { result: true, message: '수정 완료' }
             } else {
                 return { result: false, message: '수정 실패' }
+            }
+        } catch (err) {
+            throw err
+        }
+    }
+
+    async getBoardById(boardId) {
+        // 게시판 아이디 boardId와 일치하는 것 반환
+        try {
+            console.log('서비스 함수 시작')
+            const foundBoard = await db.Board.findOne({
+                where: { board_id: boardId },
+            })
+
+            console.log('시퀄라이즈 결과  : ', foundBoard instanceof db.Board)
+
+            if (foundBoard instanceof db.Board) {
+                return {
+                    result: true,
+                    message: '페이지 조회 성공',
+                    data: foundBoard,
+                }
+            } else if (foundBoard === null) {
+                return {
+                    result: false,
+                    message: '페이지 조회 실패',
+                    data: null,
+                }
+            } else {
+                throw err
+            }
+        } catch (err) {
+            throw err
+        }
+    }
+
+    async deleteBoardById(boardId) {
+        try {
+            const deletedRowNum = await db.Board.destroy({
+                where: { board_id: boardId },
+            }) // 반환값 : 삭제된 열의 갯수
+            // console.log('*********삭제된 열의 갯수 : ', deletedRowNum)
+
+            if (deletedRowNum > 0) {
+                return { result: true, message: '삭제 성공' }
+            } else {
+                return { result: false, message: '삭제 실패' }
             }
         } catch (err) {
             throw err
