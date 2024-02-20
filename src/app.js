@@ -3,6 +3,7 @@ import './config/env.js'
 import express from 'express'
 import morgan from 'morgan'
 import { authRouter } from './routers/auth.js'
+import { boardRouter } from './routers/board.js'
 import { sequelizeLoader } from './loaders/sequelize.js'
 const app = express()
 
@@ -12,6 +13,7 @@ app.use(express.urlencoded({ extended: false }))
 app.use(morgan('dev'))
 
 app.use('/auth', authRouter)
+app.use('/board', boardRouter)
 
 app.set('view engine', 'ejs')
 
