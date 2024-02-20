@@ -2,10 +2,9 @@ import { db } from '../models/index.js'
 
 export class BoardService {
     async createNewBoard(boardDto) {
-        // 작성된 글 저장 서비스 함수
+        // 작성된 게시글 저장
         try {
             const createdResult = await db.Board.create({
-                // 시퀄라이즈 create를 통해 새로운 유저의 정보 DB에 저장
                 board_title: boardDto.title,
                 board_content: boardDto.content,
                 board_user_id: boardDto.userid,
@@ -30,10 +29,9 @@ export class BoardService {
     }
 
     async getOriginalBoardById(boardId) {
-        // 수정을 위한 원본 불러오기
+        // 게시글 수정을 위해 게시글 원본 반환
         try {
             const original = await db.Board.findOne({
-                // 입력한 id에 맞는 글의 내용과 제목 찾기
                 where: { board_id: boardId },
             })
 
@@ -48,7 +46,7 @@ export class BoardService {
     }
 
     async updateBoardById(boardId, title, content) {
-        // 수정한 데이터 다시 저장하기
+        // 수정된 게시글 데이터 저장
         try {
             const result = await db.Board.update(
                 {
@@ -74,7 +72,7 @@ export class BoardService {
     }
 
     async getBoardById(boardId) {
-        // 게시판 아이디 boardId와 일치하는 것 반환
+        // 게시글 아이디 boardId와 일치하는 게시글 데이터 반환
         try {
             console.log('서비스 함수 시작')
             const foundBoard = await db.Board.findOne({
@@ -104,6 +102,7 @@ export class BoardService {
     }
 
     async deleteBoardById(boardId) {
+        // 게시글 아이디 boardId와 일치하는 게시글 데이터 삭제
         try {
             const deletedRowNum = await db.Board.destroy({
                 where: { board_id: boardId },

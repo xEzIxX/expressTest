@@ -11,8 +11,10 @@ import { isPasswordValid } from '../utils/isPasswordValid.js'
 export const boardRouter = express.Router()
 const boardService = new BoardService()
 
-// [ /board/form ] : get 글 작성, board 글 작성
+/* [ /board/form ] 게시글 작성 */
+
 boardRouter.get(
+    // 게시글 작성 페이지 조회
     '/board/form',
     wrapper(async (req, res) => {
         try {
@@ -24,6 +26,7 @@ boardRouter.get(
 )
 
 boardRouter.post(
+    // 작성된 게시글 저장
     '/board/form',
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
@@ -50,8 +53,10 @@ boardRouter.post(
     })
 )
 
-// [ /board/edit ] : get 글 수정, put 글 수정
+/* [ /board/edit ] 게시글 수정 */
+
 boardRouter.get(
+    // 수정 권한이 있다면 게시글 수정 페이지 조회
     '/board/edit',
     validate([body('boardId').notEmpty()]),
     wrapper(async (req, res) => {
@@ -67,7 +72,7 @@ boardRouter.get(
                 return res.status(200).send(original)
                 // return res.status(200).render('board/edit.ejs', {result: original})
             } else {
-                return res.status(401).send({message : '권한없음'})
+                return res.status(401).send({ message: '권한없음' })
             }
         } catch (err) {
             throw err
@@ -76,8 +81,8 @@ boardRouter.get(
 )
 
 boardRouter.put(
+    // 수정된 게시글 데이터 저장
     '/board/edit',
-    // 글 수정
     validate([
         body('boardId').notEmpty(),
         body('title').notEmpty(),
@@ -102,16 +107,16 @@ boardRouter.put(
     })
 )
 
-// [ /board ] : get 글 조회
+/* [ /board/:boardId ] 게시글 조회 */
 
 boardRouter.get(
+    // 게시글 아이디가 boardId인 게시글 조회
     '/board/:boardId',
-    // 글 조회
     wrapper(async (req, res) => {
         try {
             const boardId = req.params.boardId.split(':')[1]
 
-            const board = await boardService.getBoardById(boardId) // 게시판 아이디 boardId와 일치하는 글 갖고옴
+            const board = await boardService.getBoardById(boardId) // 게시글 아이디 boardId와 일치하는 글 갖고옴
 
             if (board.result === true) {
                 return res.status(200).send(board) // 그 글 페이지의 데이터, 화면을 보여줘야함
@@ -125,8 +130,8 @@ boardRouter.get(
 )
 
 boardRouter.delete(
-    '/board',
-    // 글 삭제
+    // 게시글 아이디가 boardId인 게시글 삭제
+    '/board/:boardId',
     validate([
         body('boardId').notEmpty(),
         body(
@@ -169,7 +174,7 @@ boardRouter.delete(
                     return res.status(404).send(deletion)
                 }
             } else {
-                return res.status(401).send({message : '권한 없음'})
+                return res.status(401).send({ message: '권한 없음' })
             }
         } catch (err) {
             throw err
