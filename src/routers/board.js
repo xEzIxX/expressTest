@@ -15,7 +15,7 @@ const boardService = new BoardService()
 
 boardRouter.get(
     // 게시글 작성 페이지 조회
-    '/board/form',
+    '/form',
     wrapper(async (req, res) => {
         try {
             return res.render('board/form.ejs')
@@ -27,10 +27,11 @@ boardRouter.get(
 
 boardRouter.post(
     // 작성된 게시글 저장
-    '/board/form',
+    '/form',
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
         try {
+            console.log('start~')
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.SECRET_KEY)
 
@@ -53,24 +54,27 @@ boardRouter.post(
     })
 )
 
-/* [ /board/edit ] 게시글 수정 */
+/* [ /board/:boardId/edit ] 게시글 수정 */
 
 boardRouter.get(
     // 수정 권한이 있다면 게시글 수정 페이지 조회
-    '/board/edit',
-    validate([body('boardId').notEmpty()]),
+    '/:boardId/edit',
     wrapper(async (req, res) => {
         try {
-            const boardId = req.body.boardId
+            const boardId = req.params.boardId
+            const foundOriginal = await boardService.getOriginalBoardById(boardId)
 
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.SECRET_KEY)
 
-            const original = await boardService.getOriginalBoardById(boardId)
+            //console.log('decoded.userId : ', decoded.userId)
+            //console.log('foundOriginal.data.board_user_id : ',foundOriginal.data.board_user_id)
 
-            if (decoded.userId === original.board_user_id) {
-                return res.status(200).send(original)
-                // return res.status(200).render('board/edit.ejs', {result: original})
+            const isValid = decoded.userId === foundOriginal.data.board_user_id
+
+            if (isValid) {
+                //return res.status(200).send(foundOriginal)
+                return res.status(200).render('board/edit.ejs', foundOriginal)
             } else {
                 return res.status(401).send({ message: '권한없음' })
             }
@@ -82,7 +86,7 @@ boardRouter.get(
 
 boardRouter.put(
     // 수정된 게시글 데이터 저장
-    '/board/edit',
+    '/:boardId/edit',
     validate([
         body('boardId').notEmpty(),
         body('title').notEmpty(),
@@ -96,7 +100,7 @@ boardRouter.put(
                 req.body.content
             )
 
-            if (updateResult.result) {
+            if (updateResult.result === true) {
                 return res.status(201).send(updateResult)
             } else {
                 return res.status(404).send(updateResult)
@@ -111,7 +115,7 @@ boardRouter.put(
 
 boardRouter.get(
     // 게시글 아이디가 boardId인 게시글 조회
-    '/board/:boardId',
+    '/:boardId',
     wrapper(async (req, res) => {
         try {
             const boardId = req.params.boardId.split(':')[1]
@@ -119,9 +123,10 @@ boardRouter.get(
             const board = await boardService.getBoardById(boardId) // 게시글 아이디 boardId와 일치하는 글 갖고옴
 
             if (board.result === true) {
-                return res.status(200).send(board) // 그 글 페이지의 데이터, 화면을 보여줘야함
+                //return res.status(200).send(board)
+                return res.status(200).render('board', { boardId, data: board }) // 그 글 페이지의 데이터, 화면을 보여줘야함
             } else {
-                return res.status(404).send(board)
+                return res.status(404).render('board', { boardId, data: board })
             }
         } catch (err) {
             throw err
@@ -131,50 +136,33 @@ boardRouter.get(
 
 boardRouter.delete(
     // 게시글 아이디가 boardId인 게시글 삭제
-    '/board/:boardId',
+    '/:boardId',
     validate([
-        body('boardId').notEmpty(),
         body(
             'password',
-            '비밀번호는 8자 이상, 대소문자, 숫자, 특수문자를 적어도 하나씩 포함해야합니다.'
         ).isStrongPassword({
             minLength: 8,
             minLowercase: 1,
             minUppercase: 1,
             minNumbers: 1,
             minSymbols: 1,
-        }),
-        body('checkPw').isStrongPassword({
-            minLength: 8,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1,
-            minSymbols: 1,
-        }),
+        })
     ]),
     wrapper(async (req, res) => {
         try {
-            const boardId = req.body.boardId
+            const boardId = req.params.boardId.split(':')[1]
             const password = req.body.password
 
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.SECRET_KEY)
 
-            // 작성자의 password와 일치하여야 삭제 가능
-            const isValid = isPasswordValid(decoded.userId, password)
+            const isValid = isPasswordValid(decoded.userId, password) // 작성자의 password와 일치 여부 확인
 
             if (isValid) {
-                const deletion = await boardService.deleteBoardById(
-                    boardId,
-                    decoded.userId
-                )
-                if (deletion.result === true) {
-                    return res.status(200).send(deletion)
-                } else {
-                    return res.status(404).send(deletion)
-                }
-            } else {
-                return res.status(401).send({ message: '권한 없음' })
+                const deletion = await boardService.deleteBoardById(boardId)
+                console.log(deletion)
+                const successStatus = deletion.result ? 200 : 400
+                return res.status(successStatus).send(deletion)
             }
         } catch (err) {
             throw err
