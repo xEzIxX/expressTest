@@ -6,7 +6,6 @@ import { wrapper } from '../utils/wrapper.js'
 import { BoardService } from '../services/board.js'
 import { body } from 'express-validator'
 import { validate } from '../utils/validate.js'
-import { isPasswordValid } from '../utils/isPasswordValid.js'
 
 export const boardRouter = express.Router()
 const boardService = new BoardService()
@@ -15,7 +14,7 @@ boardRouter.get(
     '/', // 리스트조회
     wrapper(async (req, res) => {
         try {
-            const allBoard = await boardService.foundAllBoard() // 모든 게시글 반환 서비스 함수
+            const allBoard = await boardService.findAllBoard() // 모든 게시글 반환 서비스 함수
             return res.render('board/list.ejs', allBoard)
             // return res.send(allBoard)
         } catch (err) {
@@ -49,6 +48,8 @@ boardRouter.get(
     '/form',
     wrapper(async (req, res) => {
         try {
+            // 로그인이 되어 있어야 게시글을 작성할 수 있음
+            // 토큰 확인 코드
             return res.render('board/form.ejs')
         } catch (err) {
             throw err
@@ -164,32 +165,23 @@ boardRouter.get(
 boardRouter.delete(
     // 게시글 아이디가 boardId인 게시글 삭제
     '/:boardId',
-    validate([
-        body('password').isStrongPassword({
-            minLength: 8,
-            minLowercase: 1,
-            minUppercase: 1,
-            minNumbers: 1,
-            minSymbols: 1,
-        }),
-    ]),
     wrapper(async (req, res) => {
         try {
-            const boardDto = {
-                boardId: req.params.boardId.split(':')[1],
-                password: req.body.password,
-            }
-
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.SECRET_KEY)
 
-            const isValid = isPasswordValid(decoded.userId, password) // 작성자의 password와 일치 여부 확인
-
-            if (isValid) {
-                const deletion = await boardService.deleteBoardById(boardId)
-                const successStatus = deletion.result ? 200 : 400
-                return res.status(successStatus).send(deletion)
+            const boardDto = {
+                userId : userId, //userId 미들웨어로 넘겨받음
+                boardId: req.params.boardId.split(':')[1]
             }
+            
+            const isDeleted = await boardService.deleteBoardById(boardDto)
+
+            if (isDeleted.result) {
+                return res.status(200).send(isDeleted)
+            }else{
+                return res.status(400).send(isDeleted)
+            } // 삭제 실패 시에는 res.status(401)하도록 수정해야함
         } catch (err) {
             throw err
         }

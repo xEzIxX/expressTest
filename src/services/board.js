@@ -2,11 +2,11 @@ import { db } from '../models/index.js'
 import { Op } from 'sequelize'
 
 export class BoardService {
-    async foundAllBoard() {
+    async findAllBoard() {
         try {
             const allBoard = await db.Board.findAndCountAll() // 모델인스턴스의 배열 반환
 
-            if (allBoard.count > 0) {
+            if (allBoard.count >= 0) {
                 return {
                     result: true,
                     message: '게시글 조회 성공',
@@ -29,18 +29,31 @@ export class BoardService {
             const sort = queryDto.sort
             let sortOrder
 
-            if (sort === 'date_asc') sortOrder = ['createdAt', 'ASC']
-            else if (sort === 'date_desc') sortOrder = ['createdAt', 'DESC']
-            else if (sort === 'likes_asc') sortOrder = ['board_like', 'ASC']
-            else if (sort === 'likes_desc') sortOrder = ['board_like', 'DESC']
-            else if (sort === 'views_asc') sortOrder = ['board_view', 'ASC']
-            else if (sort === 'view_desc') sortOrder = ['board_view', 'DESC']
-            else {
-                return {
-                    result: false,
-                    message: '잘못된 정렬 방식',
-                    data: null,
-                }
+            switch (sort) {
+                case 'date_asc':
+                    sortOrder = ['createdAt', 'ASC']
+                    break
+                case 'date_desc':
+                    sortOrder = ['createdAt', 'DESC']
+                    break
+                case 'likes_asc':
+                    sortOrder = ['board_like', 'ASC']
+                    break
+                case 'likes_desc':
+                    sortOrder = ['board_like', 'DESC']
+                    break
+                case 'views_asc':
+                    sortOrder = ['board_view', 'ASC']
+                    break
+                case 'views_desc':
+                    sortOrder = ['board_view', 'DESC']
+                    break
+                default:
+                    return {
+                        result: false,
+                        message: '잘못된 정렬 방식',
+                        data: null,
+                    }
             }
 
             const searchedBoard = await db.Board.findAndCountAll({
@@ -52,7 +65,7 @@ export class BoardService {
                 order: [sortOrder], // 정렬 방식
             })
 
-            if (searchedBoard.count > 0) {
+            if (searchedBoard.count >= 0) {
                 return {
                     result: true,
                     message: '검색된 게시글 조회 성공',
@@ -101,8 +114,6 @@ export class BoardService {
             const original = await db.Board.findOne({
                 where: { board_id: boardId },
             }) // 반환객체 : Board{ dataValues: {}, _previousDataValues: {}, ... }
-
-            // console.log(original.dataValues)
 
             if (original instanceof db.Board) {
                 return {
@@ -164,19 +175,19 @@ export class BoardService {
             if (foundBoard instanceof db.Board) {
                 return {
                     result: true,
-                    message: '페이지 조회 성공',
+                    message: '게시글 조회 성공',
                     data: foundBoard,
                 }
             } else if (foundBoard === null) {
                 return {
                     result: false,
-                    message: '페이지 조회 실패',
+                    message: '게시글 조회 실패',
                     data: null,
                 }
             } else {
                 return {
                     result: false,
-                    message: '페이지 조회 오류',
+                    message: '게시글 조회 오류',
                     data: null,
                 }
             }
@@ -188,6 +199,14 @@ export class BoardService {
     async deleteBoardById(boardDto) {
         // 게시글 아이디 boardDto와 일치하는 게시글 데이터 삭제
         try {
+            const board = await db.Board.findOne({
+                where: { board_id: boardDto.boardId },
+            })
+
+            if (board.board_user_id !== boardDto.userId) {
+                return { result: false, message: '삭제 권한 없음' }
+            }
+
             const deletedRowNum = await db.Board.destroy({
                 where: { board_id: boardDto.boardId },
             }) // 반환값 : 삭제된 열의 갯수
