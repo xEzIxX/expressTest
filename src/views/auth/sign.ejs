@@ -109,7 +109,11 @@
 
                 // 응답 결과 JSON으로 파싱
                 const result = await response.json();
-                alert(`회원가입 성공 여부 : ${result.result}, ${result.message}`);
+                //const result = await response.text();
+
+                alert(`send한 문자열을 받아옵니다. : ${result.message}`);
+                alert(`회원가입 성공 여부 : ${result.result}`);
+                //alert(`회원가입 성공 여부 : ${result.result}, ${result.message}`);
 
                 if(result.result === true){
                     document.location.href = "/auth/login" // 회원가입 성공 시 로그인 페이지로 이동

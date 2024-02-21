@@ -90,6 +90,14 @@
         async function redirectSign() {
             try {
                 document.location.href = "/auth/sign"
+
+                /*
+                리디렉트를 해야함.
+                일단, /auth/sign를 조회할 때, ejs파일을 렌더 중이어야함
+                그러면 /auth/sign get 라우터를 하나 더 만든다고 치면, 그러면 get 라우터가
+                두개인데 선택하여서 따를 수 있는가?
+                /auth/sign/redirect와 같은 다른 경로를 만들어야하나?
+                */
             
             } catch (err) {
                 alert(err)
