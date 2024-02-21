@@ -48,6 +48,9 @@ export class BoardService {
                 case 'views_desc':
                     sortOrder = ['board_view', 'DESC']
                     break
+                case '':
+                    sortOrder = ['createdAt', 'DESC'] // 빈문자열인 경우 최신순 정렬
+                    break
                 default:
                     return {
                         result: false,
@@ -108,11 +111,11 @@ export class BoardService {
         }
     }
 
-    async getOriginalBoardById(boardId) {
+    async getOriginalBoardById(boardDto) {
         // 게시글 수정을 위해 게시글 원본 반환
         try {
             const original = await db.Board.findOne({
-                where: { board_id: boardId },
+                where: { board_id: boardDto.boardId },
             }) // 반환객체 : Board{ dataValues: {}, _previousDataValues: {}, ... }
 
             if (original instanceof db.Board) {
@@ -166,7 +169,7 @@ export class BoardService {
     }
 
     async getBoardById(boardDto) {
-        // 게시글 아이디 boardDto와 일치하는 게시글 데이터 반환
+        // 게시글 아이디와 일치하는 게시글 데이터 반환
         try {
             const foundBoard = await db.Board.findOne({
                 where: { board_id: boardDto.boardId },
@@ -181,7 +184,7 @@ export class BoardService {
             } else if (foundBoard === null) {
                 return {
                     result: false,
-                    message: '게시글 조회 실패',
+                    message: '게시글 미존재',
                     data: null,
                 }
             } else {
