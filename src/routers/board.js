@@ -74,7 +74,7 @@ boardRouter.post(
             if (createdBoard.result === true) {
                 return res.status(201).send(createdBoard)
             } else {
-                return res.status(400).send(createdBoard)
+                return res.status(500).send(createdBoard)
             }
         } catch (err) {
             throw err
@@ -173,8 +173,8 @@ boardRouter.delete(
             if (isDeleted.result) {
                 return res.status(200).send(isDeleted)
             } else {
-                return res.status(400).send(isDeleted)
-            } // 삭제 실패 시에는 res.status(401)하도록 수정해야함
+                return res.status(403).send(isDeleted)
+            }
         } catch (err) {
             throw err
         }
