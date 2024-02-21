@@ -117,18 +117,15 @@ boardRouter.get(
 boardRouter.put(
     // 수정된 게시글 데이터 저장
     '/:boardId/edit',
-    validate([
-        body('boardId').notEmpty(),
-        body('title').notEmpty(),
-        body('content').notEmpty(),
-    ]),
+    validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
         try {
-            const updateResult = await boardService.updateBoardById(
-                req.body.boardId,
-                req.body.title,
-                req.body.content
-            )
+            const boardDto = {
+                boardId: req.params.boardId.split(':')[1],
+                title: req.body.title,
+                content: req.body.content,
+            }
+            const updateResult = await boardService.updateBoardById(boardDto)
 
             if (updateResult.result === true) {
                 return res.status(201).send(updateResult)
@@ -148,15 +145,15 @@ boardRouter.get(
     '/:boardId',
     wrapper(async (req, res) => {
         try {
-            const boardId = req.params.boardId.split(':')[1]
+            const boardDto = { boardId: req.params.boardId.split(':')[1] }
 
-            const board = await boardService.getBoardById(boardId) // 게시글 아이디 boardId와 일치하는 글 갖고옴
+            const board = await boardService.getBoardById(boardDto) // 게시글 아이디 boardId와 일치하는 글 갖고옴
 
             if (board.result === true) {
-                return res.status(200).render('board', { boardId, data: board }) // 그 글 페이지의 데이터, 화면을 보여줘야함
+                return res.status(200).render('board', board) // 그 글 페이지의 데이터, 화면을 보여줘야함
                 // return res.status(200).send(board)
             } else {
-                return res.status(404).render('board', { boardId, data: board })
+                return res.status(404).render('board', board)
             }
         } catch (err) {
             throw err
@@ -178,8 +175,10 @@ boardRouter.delete(
     ]),
     wrapper(async (req, res) => {
         try {
-            const boardId = req.params.boardId.split(':')[1]
-            const password = req.body.password
+            const boardDto = {
+                boardId: req.params.boardId.split(':')[1],
+                password: req.body.password,
+            }
 
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.SECRET_KEY)

@@ -24,9 +24,9 @@ export class BoardService {
         }
     }
 
-    async searchList(query) {
+    async searchList(queryDto) {
         try {
-            const sort = query.sort
+            const sort = queryDto.sort
             let sortOrder
 
             if (sort === 'date_asc') sortOrder = ['createdAt', 'ASC']
@@ -46,7 +46,7 @@ export class BoardService {
             const searchedBoard = await db.Board.findAndCountAll({
                 where: {
                     board_title: {
-                        [Op.substring]: query.q, // title에 검색어 포함 여부 확인
+                        [Op.substring]: queryDto.q, // title에 검색어 포함 여부 확인
                     },
                 },
                 order: [sortOrder], // 정렬 방식
@@ -128,17 +128,17 @@ export class BoardService {
         }
     }
 
-    async updateBoardById(boardId, title, content) {
+    async updateBoardById(boardDto) {
         // 수정된 게시글 데이터 저장
         try {
             const result = await db.Board.update(
                 {
-                    board_title: title,
-                    board_content: content,
+                    board_title: boardDto.title,
+                    board_content: boardDto.content,
                 },
                 {
                     where: {
-                        board_id: boardId,
+                        board_id: boardDto.boardId,
                     },
                 }
             )
@@ -154,11 +154,11 @@ export class BoardService {
         }
     }
 
-    async getBoardById(boardId) {
-        // 게시글 아이디 boardId와 일치하는 게시글 데이터 반환
+    async getBoardById(boardDto) {
+        // 게시글 아이디 boardDto와 일치하는 게시글 데이터 반환
         try {
             const foundBoard = await db.Board.findOne({
-                where: { board_id: boardId },
+                where: { board_id: boardDto.boardId },
             })
 
             if (foundBoard instanceof db.Board) {
@@ -185,11 +185,11 @@ export class BoardService {
         }
     }
 
-    async deleteBoardById(boardId) {
-        // 게시글 아이디 boardId와 일치하는 게시글 데이터 삭제
+    async deleteBoardById(boardDto) {
+        // 게시글 아이디 boardDto와 일치하는 게시글 데이터 삭제
         try {
             const deletedRowNum = await db.Board.destroy({
-                where: { board_id: boardId },
+                where: { board_id: boardDto.boardId },
             }) // 반환값 : 삭제된 열의 갯수
 
             if (deletedRowNum > 0) {
