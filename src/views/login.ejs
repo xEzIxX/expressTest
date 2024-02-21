@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>로그인</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container overflow-hidden text-center p-5">
+        <h1>로그인</h1>
+
+            <div class="row g-3 align-items-center p-3">
+                <div class="col-md-4">
+                    <label for="emailInput" class="form-label text-end">이메일</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="email" name="email" class="form-control" id="emailInput">
+                </div>
+            </div>
+
+            <div class="row g-3 align-items-center p-3">
+                <div class="col-md-4">
+                    <label for="passwordInput" class="form-label text-end">비밀번호</label>
+                </div>
+                <div class="col-md-8">
+                    <input type="password" name="password" id="passwordInput" class="form-control"
+                        aria-describedby="passwordHelpInline">
+                </div>
+            </div>
+
+            <div class="row p-3">
+                <div class="col-md-6 p-3">
+                    <button type="submit" class="btn btn-success" onclick= "performLogin()">로그인</button>
+                </div>
+                <div class="col-md-6">
+                    <button type="button" class="btn btn-secondary" onclick="redirectSign()">회원가입</button>
+                </div>
+            </div>
+    </div>
+    <script>
+        async function performLogin() {
+            try {
+                // 사용자가 입력한 이메일과 비밀번호 가져오기
+                const email = document.getElementById('emailInput').value;
+                const password = document.getElementById('passwordInput').value;
+
+                // API에 전송할 데이터
+                const data = {
+                    email: email,
+                    password: password
+                };
+
+                // API에 POST 요청 보내기
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) { // 에러 상태를 처리 : response.ok가 true이면, 응답 상태 코드가 200번대(성공)
+                    const errorMessage = await response.text();
+                    alert(`로그인 정보가 올바르지 않습니다. (에러: ${response.status} - ${errorMessage})`);
+                    return ;
+                }
+                // 이 if문이 없고 서비스 함수에서 받아온 값으로 처리하려고 하였으나 다음과 같은 오류 발생
+                // SyntaxError: Unexpected token 'N', "Not Found" is not valid JSON 
+
+                const result = await response.json(); // 응답 결과 JSON으로 파싱
+                
+                alert('result.message: ' + result.message);
+
+                if(result.result===true){
+                    document.location.href = "/" // 로그인 성공 시 메인 페이지로 이동
+                }
+            
+
+            } catch (err) {
+                alert(err)
+                throw(err)
+            }
+            
+        }
+
+        async function redirectSign() {
+            try {
+                document.location.href = "/auth/sign"
+            
+            } catch (err) {
+                alert(err)
+                throw(err)
+            }
+            
+        }
+
+
+    </script>
+</body>
+
+</html>

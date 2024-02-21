@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg sticky-top bg-body-tertiary">
+  <div class="container-fluid">
+      
+      <a class="navbar-brand" href="#">
+          <img src="https://th.bing.com/th/id/R.b41b8d16dce1b12038ca67a0492207ec?rik=c8f4HGsbUo3HYA&riu=http%3a%2f%2fthumbnail9.coupangcdn.com%2fthumbnails%2fremote%2f230x230ex%2fimage%2fvendor_inventory%2f67b3%2fe5a9740763fce79eb0e474382328a5cf6effb41a0bb7c76aa6b5b6dc5b01.jpg&ehk=7AkqzWPeIxRboaZZCpIUKdcwqOwO3wcBbzQElyfC8Z4%3d&risl=&pid=ImgRaw&r=0" alt="Logo" width="45" height="35" class="d-inline-block align-text-top">
+          m!ffyBlog
+      </a>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <a class="nav-link" href="/">메인</a>
+            <a class="nav-link" href="board/form">게시글 작성</a>
+            <a class="nav-link" href="board/list">게시글 목록</a>
+          </ul>
+      </div>
+
+      <nav class="navbar bg-body-tertiary ms-auto">
+          <% if (isToken) { %>
+              <!-- 토큰이 있을 때 보여질 내용 -->
+              <a href="mypage">
+                  <button class="btn btn-outline-success me-2" type="button">마이페이지</button>
+              </a>
+              <a href="auth/logout">
+                  <button class="btn btn-outline-success me-2" type="button">로그아웃</button>
+              </a>
+          <% } else { %>
+              <!-- 토큰이 없을 때 보여질 내용 -->
+              <a href="auth/login">
+                  <button class="btn btn-outline-success me-2" type="button">로그인</button>
+              </a>
+          <% } %>
+      </nav>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+  </div>
+</nav>
