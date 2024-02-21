@@ -1,5 +1,4 @@
 import '../config/env.js'
-import jwt from 'jsonwebtoken'
 import { newToken } from '../utils/newToken.js'
 import { getHash } from '../utils/getHash.js'
 import { db } from '../models/index.js'
@@ -16,7 +15,7 @@ export class AuthService {
             })
 
             if (user instanceof db.User) {
-                const accessToken = newToken(user.user_id, user.user_nickname)
+                const accessToken = newToken(user.user_id)
 
                 if (Boolean(accessToken) === true) {
                     // access토큰이 정상적으로 발급 되었다면
