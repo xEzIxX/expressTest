@@ -1,7 +1,6 @@
 import '../config/env.js'
 
 import express from 'express'
-import jwt from 'jsonwebtoken'
 import { wrapper } from '../utils/wrapper.js'
 import { BoardService } from '../services/board.js'
 import { body } from 'express-validator'
@@ -44,13 +43,13 @@ boardRouter.get(
 /* [ /board/form ] 게시글 작성 */
 
 boardRouter.get(
-    // 게시글 작성 페이지 조회
+    // 게시글 작성 폼 조회
     '/form',
     wrapper(async (req, res) => {
         try {
-            // 로그인이 되어 있어야 게시글을 작성할 수 있음
-            // 토큰 확인 코드
+            // console.log(req.userId)
             return res.render('board/form.ejs')
+            // return res.send({message : '게시글 작성 폼 조회'})
         } catch (err) {
             throw err
         }
@@ -58,18 +57,16 @@ boardRouter.get(
 )
 
 boardRouter.post(
-    // 작성된 게시글 저장
+    // 작성한 게시글 저장
     '/form',
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
         try {
-            const token = req.headers.authorization.split(' ')[1]
-            const decoded = jwt.verify(token, process.env.SECRET_KEY)
-
+            // console.log(req.userId)
             const boardDto = {
                 title: req.body.title,
                 content: req.body.content,
-                userid: decoded.userId,
+                userid: req.userId,
             }
 
             const createdBoard = await boardService.createNewBoard(boardDto) // 작성된 글 저장 서비스 함수
@@ -92,20 +89,17 @@ boardRouter.get(
     '/:boardId/edit',
     wrapper(async (req, res) => {
         try {
-            const boardId = req.params.boardId.split(':')[1]
-            const foundOriginal =
-                await boardService.getOriginalBoardById(boardId)
+            console.log(req.userId)
 
-            const token = req.headers.authorization.split(' ')[1]
-            const decoded = jwt.verify(token, process.env.SECRET_KEY)
+            const boardDto = { boardId: req.params.boardId.split(':')[1] }
+            const original =
+                await boardService.getOriginalBoardById(boardDto)
 
-            // console.log(decoded.userId, foundOriginal.data.board_user_id)
-
-            const isValid = decoded.userId === foundOriginal.data.board_user_id
+            const isValid = req.userId === original.data.board_user_id
 
             if (isValid) {
-                return res.status(200).render('board/edit.ejs', foundOriginal)
-                // return res.status(200).send(foundOriginal)
+                return res.status(200).render('board/edit.ejs', original)
+                // return res.status(200).send(original)
             } else {
                 return res.status(401).send({ message: '권한없음' })
             }
@@ -167,19 +161,18 @@ boardRouter.delete(
     '/:boardId',
     wrapper(async (req, res) => {
         try {
-            const token = req.headers.authorization.split(' ')[1]
-            const decoded = jwt.verify(token, process.env.SECRET_KEY)
+            console.log(req.userId)
 
             const boardDto = {
-                userId : userId, //userId 미들웨어로 넘겨받음
-                boardId: req.params.boardId.split(':')[1]
+                userId: req.userId,
+                boardId: req.params.boardId.split(':')[1],
             }
-            
+
             const isDeleted = await boardService.deleteBoardById(boardDto)
 
             if (isDeleted.result) {
                 return res.status(200).send(isDeleted)
-            }else{
+            } else {
                 return res.status(400).send(isDeleted)
             } // 삭제 실패 시에는 res.status(401)하도록 수정해야함
         } catch (err) {
