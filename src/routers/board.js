@@ -16,8 +16,8 @@ boardRouter.get(
     wrapper(async (req, res) => {
         try {
             const allBoard = await boardService.foundAllBoard() // 모든 게시글 반환 서비스 함수
-            // return res.send(allBoard)
             return res.render('board/list.ejs', allBoard)
+            // return res.send(allBoard)
         } catch (err) {
             throw err
         }
@@ -34,8 +34,8 @@ boardRouter.get(
                 sort: req.query.sort,
             }
             const searchedResult = await boardService.searchList(queryDto)
-            // return res.send(searchedResult)
             return res.render('board/list.ejs', searchedResult)
+            // return res.send(searchedResult)
         } catch (err) {
             throw err
         }
@@ -62,7 +62,6 @@ boardRouter.post(
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
         try {
-            console.log('start~')
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.SECRET_KEY)
 
@@ -99,14 +98,13 @@ boardRouter.get(
             const token = req.headers.authorization.split(' ')[1]
             const decoded = jwt.verify(token, process.env.SECRET_KEY)
 
-            // console.log('***decoded.userId : ', decoded.userId)
-            // console.log('***foundOriginal.board_user_id : ',foundOriginal.data.board_user_id)
+            // console.log(decoded.userId, foundOriginal.data.board_user_id)
 
             const isValid = decoded.userId === foundOriginal.data.board_user_id
 
             if (isValid) {
-                // return res.status(200).send(foundOriginal)
                 return res.status(200).render('board/edit.ejs', foundOriginal)
+                // return res.status(200).send(foundOriginal)
             } else {
                 return res.status(401).send({ message: '권한없음' })
             }
@@ -155,8 +153,8 @@ boardRouter.get(
             const board = await boardService.getBoardById(boardId) // 게시글 아이디 boardId와 일치하는 글 갖고옴
 
             if (board.result === true) {
-                // return res.status(200).send(board)
                 return res.status(200).render('board', { boardId, data: board }) // 그 글 페이지의 데이터, 화면을 보여줘야함
+                // return res.status(200).send(board)
             } else {
                 return res.status(404).render('board', { boardId, data: board })
             }
@@ -190,7 +188,6 @@ boardRouter.delete(
 
             if (isValid) {
                 const deletion = await boardService.deleteBoardById(boardId)
-                console.log(deletion)
                 const successStatus = deletion.result ? 200 : 400
                 return res.status(successStatus).send(deletion)
             }

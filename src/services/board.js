@@ -91,7 +91,6 @@ export class BoardService {
                 }
             }
         } catch (err) {
-            console.log(err)
             throw err
         }
     }
@@ -189,12 +188,9 @@ export class BoardService {
     async deleteBoardById(boardId) {
         // 게시글 아이디 boardId와 일치하는 게시글 데이터 삭제
         try {
-            console.log(boardId)
             const deletedRowNum = await db.Board.destroy({
                 where: { board_id: boardId },
-            })
-
-            // console.log('삭제된 열의 갯수 : ', deletedRowNum)
+            }) // 반환값 : 삭제된 열의 갯수
 
             if (deletedRowNum > 0) {
                 return { result: true, message: '삭제 성공' }
