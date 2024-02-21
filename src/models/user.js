@@ -18,6 +18,7 @@ export function User(sequelize, DataTypes) {
             user_nickname: {
                 type: DataTypes.STRING(50),
                 allowNull: false,
+                unique: true,
             },
             user_name: {
                 type: DataTypes.STRING(50),
@@ -26,6 +27,7 @@ export function User(sequelize, DataTypes) {
             user_email: {
                 type: DataTypes.STRING(50),
                 allowNull: false,
+                unique: true,
             },
         },
         {
