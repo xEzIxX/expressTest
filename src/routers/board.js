@@ -69,7 +69,7 @@ boardRouter.post(
                 userid: req.userId,
             }
 
-            const createdBoard = await boardService.createNewBoard(boardDto) // 작성된 글 저장 서비스 함수
+            const createdBoard = await boardService.createNewBoard(boardDto) // 작성한 글 저장 서비스 함수
 
             if (createdBoard.result === true) {
                 return res.status(201).send(createdBoard)
@@ -92,8 +92,7 @@ boardRouter.get(
             console.log(req.userId)
 
             const boardDto = { boardId: req.params.boardId.split(':')[1] }
-            const original =
-                await boardService.getOriginalBoardById(boardDto)
+            const original = await boardService.getOriginalBoardById(boardDto)
 
             const isValid = req.userId === original.data.board_user_id
 
@@ -161,7 +160,7 @@ boardRouter.delete(
     '/:boardId',
     wrapper(async (req, res) => {
         try {
-            console.log(req.userId)
+            // console.log(req.userId)
 
             const boardDto = {
                 userId: req.userId,

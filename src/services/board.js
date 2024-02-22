@@ -26,14 +26,14 @@ export class BoardService {
 
     async searchList(queryDto) {
         try {
-            const sort = queryDto.sort
             let sortOrder
 
-            switch (sort) {
+            switch (queryDto.sort) {
                 case 'date_asc':
                     sortOrder = ['createdAt', 'ASC']
                     break
                 case 'date_desc':
+                case '': // 빈문자열인 경우 최신순 정렬
                     sortOrder = ['createdAt', 'DESC']
                     break
                 case 'likes_asc':
@@ -47,9 +47,6 @@ export class BoardService {
                     break
                 case 'views_desc':
                     sortOrder = ['board_view', 'DESC']
-                    break
-                case '':
-                    sortOrder = ['createdAt', 'DESC'] // 빈문자열인 경우 최신순 정렬
                     break
                 default:
                     return {
@@ -87,7 +84,7 @@ export class BoardService {
     }
 
     async createNewBoard(boardDto) {
-        // 작성된 게시글 저장
+        // 작성한 게시글 저장
         try {
             const createdResult = await db.Board.create({
                 board_title: boardDto.title,
