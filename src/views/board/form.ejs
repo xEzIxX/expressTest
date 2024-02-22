@@ -1,0 +1,27 @@
+<!-- 게시글 작성 폼 -->
+<!DOCTYPE html>
+<html>
+  
+    <%- include('../common/header.ejs') %>
+
+    <body>
+
+      <%- include('../common/nav.ejs', {isToken : true}) %>
+
+      <div class="container overflow-hidden text-center p-5">
+          <div class="mb-3">
+              <input type="text" name="title" class="form-control" id="titleInput" placeholder="제목을 입력하세요">
+          </div>
+          <div class="mb-3">
+              <textarea name="content" class="form-control" id="contentInput" placeholder="내용을 입력하세요" rows="10"></textarea>
+          </div>
+  
+          
+      </div>
+
+      <%- include('../common/footer.ejs') %>
+
+      <script></script>
+    
+  </body>
+</html>

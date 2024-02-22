@@ -1,0 +1,26 @@
+<!-- 작성된 게시글 조회 -->
+<!DOCTYPE html>
+<html>
+  
+    <%- include('../common/header.ejs') %>
+
+    <body>
+      <%- include('../common/nav.ejs', {isToken : true}) %>
+
+      <div class="container overflow-hidden text-center p-5">
+
+        <div class="mb-3">
+          <input type="text" readonly class="form-control-plaintext rounded border border-success" id="staticEmail" value="<%= board.title %>">
+        </div>
+        <div class="mb-3">
+          <textarea name="content" readonly class="form-control-plaintext rounded border border-success" id="contentShow" rows="10"><%= board.content %></textarea>
+        </div>
+      
+      </div>
+
+      <%- include('../common/footer.ejs') %>
+
+      <script></script>
+
+    </body>
+</html>
