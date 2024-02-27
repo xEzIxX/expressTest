@@ -75,16 +75,16 @@ export class BoardService {
         }
     }
 
-    async createNewBoard(boardDto) {
+    async createBoard(boardDto) {
         // 작성한 게시글 저장
 
-        const createdResult = await db.Board.create({
+        const newBoard = await db.Board.create({
             board_title: boardDto.title,
             board_content: boardDto.content,
             board_user_id: boardDto.userId,
         })
 
-        if (createdResult instanceof db.Board) {
+        if (newBoard instanceof db.Board) {
             return {
                 result: true,
                 message: '게시글 저장 성공',
@@ -97,12 +97,17 @@ export class BoardService {
         }
     }
 
-    async getOriginalBoardById(boardDto) {
+    async getOriginalById(boardDto) {
         // 게시글 수정을 위해 게시글 원본 반환
 
         const original = await db.Board.findOne({
             where: { board_id: boardDto.boardId },
         }) // 반환객체 : Board{ dataValues: {}, _previousDataValues: {}, ... }
+
+        const isValid = Boolean(
+            boardDto.userId === original.dataValues.board_user_id
+        )
+        if (!isValid) return { result: false, message: '권한없음', data: null }
 
         if (original instanceof db.Board) {
             return {
@@ -128,7 +133,7 @@ export class BoardService {
     async updateBoardById(boardDto) {
         // 수정된 게시글 데이터 저장
 
-        const result = await db.Board.update(
+        const updatedRowsNum = await db.Board.update(
             {
                 board_title: boardDto.title,
                 board_content: boardDto.content,
@@ -140,8 +145,8 @@ export class BoardService {
             }
         )
 
-        if (result[0] > 0) {
-            // console.log(result[0], '개의 행이 업데이트 됨!')
+        if (updatedRowsNum[0] > 0) {
+            // console.log(updatedRowsNum[0], '개의 행이 업데이트 됨!')
             return { result: true, message: '수정 완료' }
         } else {
             return { result: false, message: '수정 실패' }
@@ -183,9 +188,8 @@ export class BoardService {
             where: { board_id: boardDto.boardId },
         })
 
-        if (board.board_user_id !== boardDto.userId) {
-            return { result: false, message: '삭제 권한 없음' }
-        }
+        const isValid = Boolean(board.board_user_id === boardDto.userId)
+        if (!isValid) return { result: false, message: '삭제 권한 없음' }
 
         const deletedRowNum = await db.Board.destroy({
             where: { board_id: boardDto.boardId },
