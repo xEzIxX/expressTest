@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>회원가입</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-</head>
+<%- include('../common/header.ejs') %>
 
 <body>
+    <%- include('../common/nav.ejs', {isToken : true}) %>
+
     <div class="container overflow-hidden text-center p-3">
         <h1>회원가입</h1>
 
@@ -70,6 +66,9 @@
             </div>
 
     </div>
+
+    <%- include('../common/footer.ejs') %>
+
     <script>
         async function performSign() {
             try {
@@ -116,12 +115,11 @@
                 //alert(`회원가입 성공 여부 : ${result.result}, ${result.message}`);
 
                 if(result.result === true){
-                    document.location.href = "/auth/login" // 회원가입 성공 시 로그인 페이지로 이동
+                    await fetch('/auth/login'); // 회원가입 성공 시 로그인 페이지로 이동
                 }
 
             } catch (error) {
-                throw(err)
-                console.error('에러 발생:', error);
+                console.log('에러 발생:', err);
             }
             
         }
