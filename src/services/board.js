@@ -89,7 +89,7 @@ export class BoardService {
             const createdResult = await db.Board.create({
                 board_title: boardDto.title,
                 board_content: boardDto.content,
-                board_user_id: boardDto.userid,
+                board_user_id: boardDto.userId,
             })
 
             if (createdResult instanceof db.Board) {

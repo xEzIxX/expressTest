@@ -53,7 +53,7 @@ boardRouter.post(
         const boardDto = {
             title: req.body.title,
             content: req.body.content,
-            userid: req.userId,
+            userId: req.userId,
         }
 
         const createdBoard = await boardService.createNewBoard(boardDto) // 작성한 글 저장 서비스 함수
