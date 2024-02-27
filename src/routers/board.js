@@ -12,13 +12,9 @@ const boardService = new BoardService()
 boardRouter.get(
     '/', // 리스트조회
     wrapper(async (req, res) => {
-        try {
-            const allBoard = await boardService.findAllBoard() // 모든 게시글 반환 서비스 함수
-            return res.render('board/list.ejs', allBoard)
-            // return res.send(allBoard)
-        } catch (err) {
-            throw err
-        }
+        const allBoard = await boardService.findAllBoard() // 모든 게시글 반환 서비스 함수
+        return res.render('board/list.ejs', allBoard)
+        // return res.send(allBoard)
     })
 )
 
@@ -26,17 +22,13 @@ boardRouter.get(
     // 검색
     '/search',
     wrapper(async (req, res) => {
-        try {
-            const queryDto = {
-                q: req.query.q,
-                sort: req.query.sort,
-            }
-            const searchedResult = await boardService.searchList(queryDto)
-            return res.render('board/list.ejs', searchedResult)
-            // return res.send(searchedResult)
-        } catch (err) {
-            throw err
+        const queryDto = {
+            q: req.query.q,
+            sort: req.query.sort,
         }
+        const searchedResult = await boardService.searchList(queryDto)
+        return res.render('board/list.ejs', searchedResult)
+        // return res.send(searchedResult)
     })
 )
 
@@ -46,13 +38,9 @@ boardRouter.get(
     // 게시글 작성 폼 조회
     '/form',
     wrapper(async (req, res) => {
-        try {
-            // console.log(req.userId)
-            return res.render('board/form.ejs')
-            // return res.send({message : '게시글 작성 폼 조회'})
-        } catch (err) {
-            throw err
-        }
+        // console.log(req.userId)
+        return res.render('board/form.ejs')
+        // return res.send({message : '게시글 작성 폼 조회'})
     })
 )
 
@@ -61,23 +49,19 @@ boardRouter.post(
     '/form',
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
-        try {
-            // console.log(req.userId)
-            const boardDto = {
-                title: req.body.title,
-                content: req.body.content,
-                userid: req.userId,
-            }
+        console.log(req.userId)
+        const boardDto = {
+            title: req.body.title,
+            content: req.body.content,
+            userid: req.userId,
+        }
 
-            const createdBoard = await boardService.createNewBoard(boardDto) // 작성한 글 저장 서비스 함수
+        const createdBoard = await boardService.createNewBoard(boardDto) // 작성한 글 저장 서비스 함수
 
-            if (createdBoard.result === true) {
-                return res.status(201).send(createdBoard)
-            } else {
-                return res.status(500).send(createdBoard)
-            }
-        } catch (err) {
-            throw err
+        if (createdBoard.result === true) {
+            return res.status(201).send(createdBoard)
+        } else {
+            return res.status(500).send(createdBoard)
         }
     })
 )
@@ -88,22 +72,18 @@ boardRouter.get(
     // 수정 권한이 있다면 게시글 수정 페이지 조회
     '/:boardId/edit',
     wrapper(async (req, res) => {
-        try {
-            console.log(req.userId)
+        console.log(req.userId)
 
-            const boardDto = { boardId: req.params.boardId.split(':')[1] }
-            const original = await boardService.getOriginalBoardById(boardDto)
+        const boardDto = { boardId: req.params.boardId.split(':')[1] }
+        const original = await boardService.getOriginalBoardById(boardDto)
 
-            const isValid = req.userId === original.data.board_user_id
+        const isValid = req.userId === original.data.board_user_id
 
-            if (isValid) {
-                return res.status(200).render('board/edit.ejs', original)
-                // return res.status(200).send(original)
-            } else {
-                return res.status(401).send({ message: '권한없음' })
-            }
-        } catch (err) {
-            throw err
+        if (isValid) {
+            // return res.status(200).render('board/edit.ejs', original)
+            return res.status(200).send(original)
+        } else {
+            return res.status(401).send({ message: '권한없음' })
         }
     })
 )
@@ -113,21 +93,17 @@ boardRouter.put(
     '/:boardId/edit',
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
-        try {
-            const boardDto = {
-                boardId: req.params.boardId.split(':')[1],
-                title: req.body.title,
-                content: req.body.content,
-            }
-            const updateResult = await boardService.updateBoardById(boardDto)
+        const boardDto = {
+            boardId: req.params.boardId.split(':')[1],
+            title: req.body.title,
+            content: req.body.content,
+        }
+        const updateResult = await boardService.updateBoardById(boardDto)
 
-            if (updateResult.result === true) {
-                return res.status(201).send(updateResult)
-            } else {
-                return res.status(404).send(updateResult)
-            }
-        } catch (err) {
-            throw err
+        if (updateResult.result === true) {
+            return res.status(201).send(updateResult)
+        } else {
+            return res.status(404).send(updateResult)
         }
     })
 )
@@ -138,19 +114,15 @@ boardRouter.get(
     // 게시글 아이디가 boardId인 게시글 조회
     '/:boardId',
     wrapper(async (req, res) => {
-        try {
-            const boardDto = { boardId: req.params.boardId.split(':')[1] }
+        const boardDto = { boardId: req.params.boardId.split(':')[1] }
 
-            const board = await boardService.getBoardById(boardDto) // 게시글 아이디 boardId와 일치하는 글 갖고옴
+        const board = await boardService.getBoardById(boardDto) // 게시글 아이디 boardId와 일치하는 글 갖고옴
 
-            if (board.result === true) {
-                return res.status(200).render('board', board) // 그 글 페이지의 데이터, 화면을 보여줘야함
-                // return res.status(200).send(board)
-            } else {
-                return res.status(404).render('board', board)
-            }
-        } catch (err) {
-            throw err
+        if (board.result === true) {
+            return res.status(200).render('board', board) // 그 글 페이지의 데이터, 화면을 보여줘야함
+            // return res.status(200).send(board)
+        } else {
+            return res.status(404).render('board', board)
         }
     })
 )
@@ -159,23 +131,19 @@ boardRouter.delete(
     // 게시글 아이디가 boardId인 게시글 삭제
     '/:boardId',
     wrapper(async (req, res) => {
-        try {
-            // console.log(req.userId)
+        // console.log(req.userId)
 
-            const boardDto = {
-                userId: req.userId,
-                boardId: req.params.boardId.split(':')[1],
-            }
+        const boardDto = {
+            userId: req.userId,
+            boardId: req.params.boardId.split(':')[1],
+        }
 
-            const isDeleted = await boardService.deleteBoardById(boardDto)
+        const isDeleted = await boardService.deleteBoardById(boardDto)
 
-            if (isDeleted.result) {
-                return res.status(200).send(isDeleted)
-            } else {
-                return res.status(403).send(isDeleted)
-            }
-        } catch (err) {
-            throw err
+        if (isDeleted.result) {
+            return res.status(200).send(isDeleted)
+        } else {
+            return res.status(403).send(isDeleted)
         }
     })
 )
