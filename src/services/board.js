@@ -75,13 +75,13 @@ export class BoardService {
         }
     }
 
-    async createBoard(boardDto) {
+    async createBoard(newBoardDto) {
         // 작성한 게시글 저장
 
         const newBoard = await db.Board.create({
-            board_title: boardDto.title,
-            board_content: boardDto.content,
-            board_user_id: boardDto.userId,
+            board_title: newBoardDto.title,
+            board_content: newBoardDto.content,
+            board_user_id: newBoardDto.userId,
         })
 
         if (newBoard instanceof db.Board) {
@@ -97,15 +97,15 @@ export class BoardService {
         }
     }
 
-    async getOriginalById(boardDto) {
+    async getOriginalById(accessCheckDto) {
         // 게시글 수정을 위해 게시글 원본 반환
 
         const original = await db.Board.findOne({
-            where: { board_id: boardDto.boardId },
+            where: { board_id: accessCheckDto.boardId },
         }) // 반환객체 : Board{ dataValues: {}, _previousDataValues: {}, ... }
 
         const isValid = Boolean(
-            boardDto.userId === original.dataValues.board_user_id
+            accessCheckDto.userId === original.dataValues.board_user_id
         )
         if (!isValid) return { result: false, message: '권한없음', data: null }
 
@@ -130,17 +130,17 @@ export class BoardService {
         }
     }
 
-    async updateBoardById(boardDto) {
+    async updateBoardById(updatedBoardDto) {
         // 수정된 게시글 데이터 저장
 
         const updatedRowsNum = await db.Board.update(
             {
-                board_title: boardDto.title,
-                board_content: boardDto.content,
+                board_title: updatedBoardDto.title,
+                board_content: updatedBoardDto.content,
             },
             {
                 where: {
-                    board_id: boardDto.boardId,
+                    board_id: updatedBoardDto.boardId,
                 },
             }
         )
@@ -153,11 +153,11 @@ export class BoardService {
         }
     }
 
-    async getBoardById(boardDto) {
+    async getBoardById(boardIdDto) {
         // 게시글 아이디와 일치하는 게시글 데이터 반환
 
         const foundBoard = await db.Board.findOne({
-            where: { board_id: boardDto.boardId },
+            where: { board_id: boardIdDto.boardId },
         })
 
         if (foundBoard instanceof db.Board) {
@@ -181,18 +181,18 @@ export class BoardService {
         }
     }
 
-    async deleteBoardById(boardDto) {
-        // 게시글 아이디 boardDto와 일치하는 게시글 데이터 삭제
+    async deleteBoardById(accessCheckDto) {
+        // 게시글 아이디 accessCheckDto와 일치하는 게시글 데이터 삭제
 
         const board = await db.Board.findOne({
-            where: { board_id: boardDto.boardId },
+            where: { board_id: accessCheckDto.boardId },
         })
 
-        const isValid = Boolean(board.board_user_id === boardDto.userId)
+        const isValid = Boolean(board.board_user_id === accessCheckDto.userId)
         if (!isValid) return { result: false, message: '삭제 권한 없음' }
 
         const deletedRowNum = await db.Board.destroy({
-            where: { board_id: boardDto.boardId },
+            where: { board_id: accessCheckDto.boardId },
         }) // 반환값 : 삭제된 열의 갯수
 
         if (deletedRowNum > 0) {

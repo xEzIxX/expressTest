@@ -60,13 +60,13 @@ boardRouter.post(
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
         console.log(req.userId)
-        const boardDto = {
+        const newBoardDto = {
             title: req.body.title,
             content: req.body.content,
             userId: req.userId,
         }
 
-        const createdBoard = await boardService.createBoard(boardDto) // 작성한 글 저장 서비스 함수
+        const createdBoard = await boardService.createBoard(newBoardDto) // 작성한 글 저장 서비스 함수
 
         if (createdBoard.result === true) {
             return res.status(201).send(createdBoard)
@@ -84,12 +84,12 @@ boardRouter.get(
     wrapper(async (req, res) => {
         // console.log(req.userId)
 
-        const boardDto = {
+        const accessCheckDto = {
             userId: req.userId,
             boardId: req.params.boardId.split(':')[1],
         }
 
-        const foundOriginal = await boardService.getOriginalById(boardDto)
+        const foundOriginal = await boardService.getOriginalById(accessCheck)
 
         if (foundOriginal.result === true) {
             return res.status(200).render('board/edit.ejs', foundOriginal)
@@ -105,12 +105,12 @@ boardRouter.put(
     '/:boardId/edit',
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
-        const boardDto = {
+        const updatedBoardDto = {
             boardId: req.params.boardId.split(':')[1],
             title: req.body.title,
             content: req.body.content,
         }
-        const updatedBoard = await boardService.updateBoardById(boardDto)
+        const updatedBoard = await boardService.updateBoardById(updatedBoardDto)
 
         if (updatedBoard.result === true) {
             return res.status(201).send(updatedBoard)
@@ -126,9 +126,9 @@ boardRouter.get(
     // 게시글 아이디가 boardId인 게시글 조회
     '/:boardId',
     wrapper(async (req, res) => {
-        const boardDto = { boardId: req.params.boardId.split(':')[1] }
+        const boardIdDto = { boardId: req.params.boardId.split(':')[1] }
 
-        const foundBoard = await boardService.getBoardById(boardDto) // 게시글 아이디 boardId와 일치하는 조회할 게시글
+        const foundBoard = await boardService.getBoardById(boardIdDto) // 게시글 아이디 boardId와 일치하는 조회할 게시글
 
         if (foundBoard.result === true) {
             return res.status(200).render('board', foundBoard) // 게시글 조회
@@ -145,12 +145,12 @@ boardRouter.delete(
     wrapper(async (req, res) => {
         // console.log(req.userId)
 
-        const boardDto = {
+        const accessCheckDto = {
             userId: req.userId,
             boardId: req.params.boardId.split(':')[1],
         }
 
-        const deletedBoard = await boardService.deleteBoardById(boardDto)
+        const deletedBoard = await boardService.deleteBoardById(accessCheckDto)
 
         if (deletedBoard.result === true) {
             return res.status(200).send(deletedBoard)
