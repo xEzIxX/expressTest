@@ -80,7 +80,7 @@ authRouter.post(
         const newUser = await authService.signUp(newUserDto) // 데이터 베이스에 유저 객체 생성
 
         if (newUser.result === true) {
-            return res.status(201).send(newUser) // 유저 객체 생성 완료 (회원가입 성공)
+            return res.status(200).send(newUser) // 유저 객체 생성 완료 (회원가입 성공)
         } else if (newUser.result === false) {
             return res.status(404).send(newUser)
         } else {
@@ -93,14 +93,18 @@ authRouter.post(
 authRouter.get(
     '/logout',
     wrapper(async (req, res) => {
-        const isToken = Boolean(req.cookies.token) 
+        const isToken = Boolean(req.cookies.token)
 
         // cookie의 token값이 비어있지 않으면 비워줌
         if (isToken === true) {
             res.clearCookie('token')
-            return res.status(200).send({ result : true, message: '로그아웃 성공' })
+            return res
+                .status(200)
+                .send({ result: true, message: '로그아웃 성공' })
         } else {
-            return res.status(401).send({ result : false, message: '로그인 상태가 아님' })
+            return res
+                .status(401)
+                .send({ result: false, message: '로그인 상태가 아님' })
         }
     })
 )

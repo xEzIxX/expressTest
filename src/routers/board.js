@@ -10,7 +10,7 @@ export const boardRouter = express.Router()
 const boardService = new BoardService()
 
 boardRouter.get(
-    // 리스트조회
+    // 게시글 리스트 페이지 조회
     '/',
     wrapper(async (req, res) => {
         const foundAllBoard = await boardService.findAllBoard() // 모든 게시글 반환 서비스 함수
@@ -26,7 +26,7 @@ boardRouter.get(
 )
 
 boardRouter.get(
-    // 검색
+    // 게시글 검색
     '/search',
     wrapper(async (req, res) => {
         const queryDto = {
@@ -36,7 +36,9 @@ boardRouter.get(
         const searchedList = await boardService.searchList(queryDto)
 
         if (searchedList.result === true) {
-            return res.render('board/list.ejs', { result: searchedList })
+            return res
+                .status(200)
+                .render('board/list.ejs', { result: searchedList })
         } else {
             return res.status(500).send(searchedList)
         }
@@ -50,7 +52,7 @@ boardRouter.get(
     '/form',
     wrapper(async (req, res) => {
         // console.log('게시글 작성 폼 조회 req.userId : ', req.userId)
-        return res.render('board/form.ejs')
+        return res.status(200).render('board/form.ejs')
     })
 )
 
@@ -70,7 +72,7 @@ boardRouter.post(
         const createdBoard = await boardService.createBoard(newBoardDto) // 작성한 글 저장 서비스 함수
 
         if (createdBoard.result === true) {
-            return res.status(201).send(createdBoard)
+            return res.status(200).send(createdBoard)
         } else {
             return res.status(500).send(createdBoard)
         }
@@ -118,7 +120,7 @@ boardRouter.put(
         const updatedBoard = await boardService.updateBoardById(updatedBoardDto)
 
         if (updatedBoard.result === true) {
-            return res.status(201).send(updatedBoard)
+            return res.status(200).send(updatedBoard)
         } else {
             return res.status(404).send(updatedBoard)
         }
