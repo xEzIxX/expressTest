@@ -16,8 +16,9 @@ boardRouter.get(
         const foundAllBoard = await boardService.findAllBoard() // 모든 게시글 반환 서비스 함수
 
         if (foundAllBoard.result === true) {
-            return res.status(200).render('board/list.ejs', foundAllBoard)
-            // return res.send(foundAllBoard)
+            return res
+                .status(200)
+                .render('board/list.ejs', { result: foundAllBoard })
         } else {
             return res.status(500).send(foundAllBoard)
         }
@@ -35,8 +36,7 @@ boardRouter.get(
         const searchedList = await boardService.searchList(queryDto)
 
         if (searchedList.result === true) {
-            return res.render('board/list.ejs', searchedList)
-            // return res.send(searchedList)
+            return res.render('board/list.ejs', { result: searchedList })
         } else {
             return res.status(500).send(searchedList)
         }
@@ -49,7 +49,7 @@ boardRouter.get(
     // 게시글 작성 폼 조회
     '/form',
     wrapper(async (req, res) => {
-        // console.log(req.userId)
+        // console.log('게시글 작성 폼 조회 req.userId : ', req.userId)
         return res.render('board/form.ejs')
     })
 )
@@ -59,7 +59,8 @@ boardRouter.post(
     '/form',
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
-        console.log(req.userId)
+        // console.log('작성한 게시글 저장  req.userId : ', req.userId)
+
         const newBoardDto = {
             title: req.body.title,
             content: req.body.content,
@@ -82,20 +83,24 @@ boardRouter.get(
     // 수정 권한이 있다면 게시글 수정 페이지 조회
     '/:boardId/edit',
     wrapper(async (req, res) => {
-        // console.log(req.userId)
+        // console.log('수정 페이지 조회 라우터 :' + req.userId)
 
         const accessCheckDto = {
             userId: req.userId,
             boardId: req.params.boardId.split(':')[1],
         }
 
-        const foundOriginal = await boardService.getOriginalById(accessCheck)
+        const foundOriginal = await boardService.getOriginalById(accessCheckDto)
 
+        // console.log('라우터에서 최종 전달 객체 : ', foundOriginal)
         if (foundOriginal.result === true) {
-            return res.status(200).render('board/edit.ejs', foundOriginal)
-            // return res.status(200).send(foundOriginal)
+            return res
+                .status(200)
+                .render('board/edit.ejs', { result: foundOriginal })
         } else {
-            return res.status(401).send(foundOriginal)
+            return res
+                .status(401)
+                .render('board/edit.ejs', { result: foundOriginal })
         }
     })
 )
@@ -126,15 +131,21 @@ boardRouter.get(
     // 게시글 아이디가 boardId인 게시글 조회
     '/:boardId',
     wrapper(async (req, res) => {
-        const boardIdDto = { boardId: req.params.boardId.split(':')[1] }
+        const boardIdDto = {
+            boardId: req.params.boardId.split(':')[1],
+        }
 
         const foundBoard = await boardService.getBoardById(boardIdDto) // 게시글 아이디 boardId와 일치하는 조회할 게시글
 
         if (foundBoard.result === true) {
-            return res.status(200).render('board', foundBoard) // 게시글 조회
+            return res
+                .status(200)
+                .render('board/board.ejs', { result: foundBoard }) // 게시글 조회
             // return res.status(200).send(foundBoard)
         } else {
-            return res.status(404).render('board', foundBoard)
+            return res
+                .status(404)
+                .render('board/board.ejs', { result: foundBoard })
         }
     })
 )
