@@ -24,24 +24,24 @@ export class BoardService {
         let sortOrder
 
         switch (queryDto.sort) {
+            case '': // 빈문자열인 경우 최신순 정렬
+            case 'date_desc':
+                sortOrder = ['createdAt', 'DESC'] 
+                break
             case 'date_asc':
                 sortOrder = ['createdAt', 'ASC']
                 break
-            case 'date_desc':
-            case '': // 빈문자열인 경우 최신순 정렬
-                sortOrder = ['createdAt', 'DESC']
-                break
-            case 'likes_asc':
-                sortOrder = ['board_like', 'ASC']
-                break
-            case 'likes_desc':
-                sortOrder = ['board_like', 'DESC']
-                break
-            case 'views_asc':
-                sortOrder = ['board_view', 'ASC']
+            case 'liked_desc':
+                sortOrder = ['board_liked', 'DESC']
+                break     
+            case 'liked_asc':
+                sortOrder = ['board_liked', 'ASC'] 
                 break
             case 'views_desc':
                 sortOrder = ['board_view', 'DESC']
+                break
+            case 'views_asc':
+                sortOrder = ['board_view', 'ASC']
                 break
             default:
                 return {

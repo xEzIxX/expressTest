@@ -59,7 +59,11 @@ export class AuthService {
             where: { user_nickname: newUserDto.nickname },
         })
 
-        if (foundEmail === null && foundNickname === null) {
+        const isAvailable = Boolean(
+            foundEmail === null && foundNickname === null
+        )
+
+        if (isAvailable) {
             await db.User.create({
                 // 시퀄라이즈 create를 통해 새로운 유저의 정보 DB에 저장
                 user_email: newUserDto.email,
