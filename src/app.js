@@ -2,6 +2,7 @@ import './config/env.js'
 
 import express from 'express'
 import morgan from 'morgan'
+import cookieParser from 'cookie-parser'
 
 import { authRouter } from './routers/auth.js'
 import { boardRouter } from './routers/board.js'
@@ -12,6 +13,7 @@ import { tokenChecker } from './utils/tokenChecker.js'
 const app = express()
 
 app.use(morgan('dev'))
+app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
@@ -31,7 +33,7 @@ app.use('/board', boardRouter)
 
 // 에러 핸들러
 app.use((err, req, res, next) => {
-    // console.log('에러 핸들러에서 처리된 서버 오류', err)
+    console.log('에러 핸들러에서 처리된 서버 오류', err)
     res.status(500).send({ message: '서버 오류' })
 })
 
