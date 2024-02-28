@@ -1,4 +1,4 @@
-<!-- 게시글 작성 폼 -->
+<!-- 게시글 작성 폼 조회 -->
 <!DOCTYPE html>
 <html>
   
@@ -15,13 +15,42 @@
           <div class="mb-3">
               <textarea name="content" class="form-control" id="contentInput" placeholder="내용을 입력하세요" rows="10"></textarea>
           </div>
-  
-          
       </div>
 
-      <%- include('../common/footer.ejs') %>
+      <div class="mb-3 p-2">
+        <button type="submit" class="btn btn-success" onclick= "back()"> 뒤로가기 </button>
+        <button type="button" class="btn btn-secondary" onclick="create()"> 작성 완료 </button>
+      </div>
 
-      <script></script>
-    
+    <%- include('../common/footer.ejs') %>
+
+    <script>
+      function back(){
+        window.history.back(); // 이전 페이지로 이동
+      }
+
+      // 글 조회 (fetch GET방식) 시 localStorage.getItem('token')하여 접근 권한 확인 함수 추가
+
+      async function create(){ // 작성한 글 저장
+
+        const accessToken = localStorage.getItem('token')
+
+        const response = await fetch('/board/form', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${accessToken}`
+                  },
+                  body: JSON.stringify(data)
+              })
+        const result = await response.json()
+
+        alert('게시글 저장 결과 : ' + result.message)
+
+        await fetch(`/board/:${result.boardId}`) // 저장된 게시글 조회
+
+      }
+             
+    </script>
   </body>
 </html>
