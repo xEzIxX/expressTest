@@ -1,0 +1,78 @@
+<!-- 게시글 수정 폼 조회 -->
+<!DOCTYPE html>
+<html>
+  
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>blog front</title>
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    </head>
+
+    <body >
+
+      <div class="container overflow-hidden text-center p-5">
+        <div class="mb-3">
+          <input type="text" class="form-control-plaintext rounded border border-success" id="titleInput" value="<%= result.data?.originalTitle %>" >
+        </div>
+        <div class="mb-3">
+          <textarea name="content" class="form-control-plaintext rounded border border-success" id="contentInput" rows="10"><%= result.data?.originalContent %></textarea>
+        </div>
+      </div>
+
+      <div class="mb-3 p-2">
+        <button type="submit" class="btn btn-success" onclick= "back()"> 뒤로가기 </button>
+        <button type="button" class="btn btn-secondary" onclick="saveEdited()"> 수정 완료 </button>
+      </div>
+
+    <script>
+
+      alert('<%= result.message %>')
+
+
+      function back(){
+        window.history.back(); // 이전 페이지로 이동
+      }
+
+      async function saveEdited(){ // 수정한 글 저장
+        try {
+          const title = document.getElementById('titleInput').value
+          const content = document.getElementById('contentInput').value
+
+          const path = window.location.pathname
+          alert('현재 경로 : '+path)
+          const boardId = path.split("/")[2]
+          alert('boardId : '+boardId)
+
+          const response = await fetch(`/board/${boardId}/edit`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      title: title, // 업데이트 될 내용
+                      content : content
+                  })
+                })
+          
+          if (!response.ok) { // 에러 상태를 처리 : response.ok가 true이면, 응답 상태 코드가 200번대(성공)
+              const errorMessage = await response.text();
+              alert(`수정된 게시글 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
+              throw err;
+          }
+
+          const result = await response.json()
+
+          alert('게시글 저장 결과 : ' + result.message)
+
+          //await fetch(`/board/:${boardId}`) // 저장된 게시글 조회
+
+        } catch (err) {
+              console.log('에러 발생:', err)
+              alter(err)
+        }
+      }
+
+    </script>
+  </body>
+</html>
