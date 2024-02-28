@@ -112,19 +112,22 @@ export class BoardService {
         if (original instanceof db.Board) {
             return {
                 result: true,
-                message: '게시글 반환 성공',
-                data: original.dataValues,
+                message: '게시글 수정 페이지 조회',
+                data: {
+                    originalTitle: original.dataValues.board_title,
+                    originalContent: original.dataValues.board_content,
+                },
             }
         } else if (original === null) {
             return {
                 result: false,
-                message: '게시글 반환 실패',
+                message: '게시글 수정 페이지 조회 실패',
                 data: null,
             }
         } else {
             return {
                 result: false,
-                message: '게시글 반환 오류',
+                message: '게시글 수정 페이지 조회 오류',
                 data: null,
             }
         }
@@ -164,7 +167,11 @@ export class BoardService {
             return {
                 result: true,
                 message: '게시글 조회 성공',
-                data: foundBoard,
+                data: {
+                    // writerId : foundBoard.dataValues.board_writer,
+                    title: foundBoard.dataValues.board_title,
+                    content: foundBoard.dataValues.board_content,
+                },
             }
         } else if (foundBoard === null) {
             return {
