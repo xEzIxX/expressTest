@@ -21,11 +21,11 @@ authRouter.post(
             password: req.body.password,
         }
 
-        const foundUser = await authService.login(userD1to) // tk 발급
+        const foundUser = await authService.login(userDto) // tk 발급
 
         if (foundUser.result === true) {
             const accessToken = foundUser.token
-            res.setHeader('Authorization', `Bearer ${accessToken}`) // 로그인 시 access 토큰 발급
+            res.cookie('token', accessToken)
 
             return res.status(200).send(foundUser)
             // header에는 Bearer가 토큰 앞에 존재하지만, foundUser.token에는 토큰만 존재
@@ -93,13 +93,14 @@ authRouter.post(
 authRouter.get(
     '/logout',
     wrapper(async (req, res) => {
-        const isToken = Boolean(req.headers.authorization)
+        const isToken = Boolean(req.cookies.token) 
 
+        // cookie의 token값이 비어있지 않으면 비워줌
         if (isToken === true) {
-            res.setHeader('Authorization', '')
-            return res.status(200).send({ message: '로그아웃 성공' })
+            res.clearCookie('token')
+            return res.status(200).send({ result : true, message: '로그아웃 성공' })
         } else {
-            return res.status(401).send({ message: '로그인 상태가 아님' })
+            return res.status(401).send({ result : false, message: '로그인 상태가 아님' })
         }
     })
 )
