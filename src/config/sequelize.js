@@ -7,6 +7,7 @@ const config = {
     options: {
         host: process.env.DB_HOST || 'localhost',
         dialect: process.env.DB_DIALECT,
+        timezone: "+09:00"
     },
 }
 
