@@ -3,13 +3,16 @@ import { Op } from 'sequelize'
 
 export class BoardService {
     async findAllBoard() {
-        const allBoard = await db.Board.findAndCountAll() // 모델인스턴스의 배열 반환
+        const allBoard = await db.Board.findAndCountAll()
+        // allBoard = {count:25, rows : [{dataValues:[], ...},{},..]}
+        
+        const allBoardDataArray = allBoard.rows.map(board => board.dataValues)
 
         if (allBoard.count >= 0) {
             return {
                 result: true,
                 message: '게시글 조회 성공',
-                data: allBoard.rows,
+                data: allBoardDataArray,
             }
         } else {
             return {
@@ -24,7 +27,6 @@ export class BoardService {
         let sortOrder
 
         switch (queryDto.sort) {
-            case '': // 빈문자열인 경우 최신순 정렬
             case 'date_desc':
                 sortOrder = ['createdAt', 'DESC'] 
                 break
@@ -44,11 +46,7 @@ export class BoardService {
                 sortOrder = ['board_view', 'ASC']
                 break
             default:
-                return {
-                    result: false,
-                    message: '잘못된 정렬 방식',
-                    data: null,
-                }
+                sortOrder = ['createdAt', 'DESC'] // 기본값 : 최신순 정렬
         }
 
         const searchedBoard = await db.Board.findAndCountAll({
@@ -59,12 +57,13 @@ export class BoardService {
             },
             order: [sortOrder], // 정렬 방식
         })
+        const searchedBoardDataArray = searchedBoard.rows.map(board => board.dataValues)
 
         if (searchedBoard.count >= 0) {
             return {
                 result: true,
                 message: '검색된 게시글 조회 성공',
-                data: searchedBoard.rows,
+                data: searchedBoardDataArray,
             }
         } else {
             return {
