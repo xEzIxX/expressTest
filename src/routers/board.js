@@ -20,7 +20,9 @@ boardRouter.get(
                 .status(200)
                 .render('board/list.ejs', { result: foundAllBoard })
         } else {
-            return res.status(500).send(foundAllBoard)
+            return res
+                .status(500)
+                .render('board/list.ejs', { result: foundAllBoard })
         }
     })
 )
@@ -36,9 +38,7 @@ boardRouter.get(
         const searchedList = await boardService.searchList(queryDto)
 
         if (searchedList.result === true) {
-            return res
-                .status(200)
-                .render('board/list.ejs', { result: searchedList })
+            return res.status(200).send(searchedList)
         } else {
             return res.status(500).send(searchedList)
         }
@@ -143,7 +143,6 @@ boardRouter.get(
             return res
                 .status(200)
                 .render('board/board.ejs', { result: foundBoard }) // 게시글 조회
-            // return res.status(200).send(foundBoard)
         } else {
             return res
                 .status(404)
