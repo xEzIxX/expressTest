@@ -1,15 +1,11 @@
-<!-- 게시글 수정 폼 조회 -->
 <!DOCTYPE html>
 <html>
   
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <title>blog front</title>
-      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-    </head>
+    <%- include('../common/header.ejs') %>
 
-    <body >
+    <body>
+
+      <%- include('../common/nav.ejs') %>
 
       <div class="container overflow-hidden text-center p-5">
         <div class="mb-3">
@@ -25,6 +21,8 @@
         <button type="button" class="btn btn-secondary" onclick="saveEdited()"> 수정 완료 </button>
       </div>
 
+      <%- include('../common/footer.ejs') %>
+
     <script>
 
       alert('<%= result.message %>')
@@ -36,13 +34,8 @@
 
       async function saveEdited(){ // 수정한 글 저장
         try {
-          const title = document.getElementById('titleInput').value
-          const content = document.getElementById('contentInput').value
-
           const path = window.location.pathname
-          alert('현재 경로 : '+path)
           const boardId = path.split("/")[2]
-          alert('boardId : '+boardId)
 
           const response = await fetch(`/board/${boardId}/edit`, {
                     method: 'PUT',
@@ -64,14 +57,29 @@
           const result = await response.json()
 
           alert('게시글 저장 결과 : ' + result.message)
+          alert('boardId : '+boardId)
 
-          //await fetch(`/board/:${boardId}`) // 저장된 게시글 조회
+          await showEdited() // 편집 완료된 게시글을 조회하는 함수 호출
 
         } catch (err) {
               console.log('에러 발생:', err)
-              alter(err)
+              alert(err)
         }
       }
+
+    async function showEdited() { // 편집 완료된 게시글 조회
+      try { 
+          const path = window.location.pathname
+          const boardId = path.split("/")[2]
+          alert('boardId : '+boardId)
+
+          await fetch(`/board/${boardId}`)
+
+      } catch (err) {
+          console.log('에러 발생:', err)
+          alert(err)
+      }
+    }
 
     </script>
   </body>
