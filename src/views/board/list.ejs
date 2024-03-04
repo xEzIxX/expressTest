@@ -11,22 +11,22 @@
   <div class="container overflow-hidden text-center p-5">
     <div class="d-flex p-3 " role="search" >
         <input class="form-control me-2" type="search" id="searchInput" aria-label="Search">
-        <button class="btn btn-outline-success" type="submit">Search</button>
+        <button class="btn btn-outline-success"> 검색 </button>
     </div>
 
     <div class="d-flex dropdown justify-content-end p-2">
-        <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          정렬 방식
-        </button>
-        <ul class="dropdown-menu">
-          <li><a class="dropdown-item">오래된순</a></li>
-          <li><a class="dropdown-item">최신순</a></li>
-          <li><a class="dropdown-item">좋아요 많은 순</a></li>
-          <li><a class="dropdown-item">좋아요 적은 순</a></li>
-          <li><a class="dropdown-item">조회수 많은 순</a></li>
-          <li><a class="dropdown-item">조회수 적은 순</a></li>
-        </ul>
-    </div>
+      <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        정렬 방식
+      </button>
+      <ul class="dropdown-menu" id="sort-item" aria-labelledby="dLabel">
+        <li><a class="dropdown-item" id="date_desc" >오래된순</a></li>
+        <li><a class="dropdown-item" id="date_asc" >최신순</a></li>
+        <li><a class="dropdown-item" id="liked_desc" >좋아요 많은 순</a></li>
+        <li><a class="dropdown-item" id="liked_asc" >좋아요 적은 순</a></li>
+        <li><a class="dropdown-item" id="views_desc" >조회수 많은 순</a></li>
+        <li><a class="dropdown-item" id="views_asc" >조회수 적은 순</a></li>
+      </ul>
+  </div>
 
     <div class="d-flex justify-content-end p-2" role="search">
         <button type="button" class="btn btn-outline-success"> 새 게시글 작성 </button>
@@ -45,17 +45,16 @@
         </thead>
         <tbody class="table-group-divider">
 
-          <% for(let i=0; i< board.data.length; i++) { %>
-
+        <% for(let i = 0; i< result.data.length; i++){ %>
           <tr>
-            <th scope="row">i</th>
-            <td><%=board.data[i].board_title%></td>
-            <td><%=board.data[i].userNickname%></td>
-            <td><%=board.data[i].board_liked%></td>
-            <td><%=board.data[i].board_view%></td>
-            <td><%=board.data[i].createdAt%></td>
+            <th scope="row"><%= i+1 %></th>
+            <td><%= result.data[i].board_title %></td>
+            <td><%= result.data[i].userNickname %></td>
+            <td><%= result.data[i].board_liked %></td>
+            <td><%= result.data[i].board_view %></td>
+            <td><%= result.data[i].createdAt.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) %></td>
           </tr>
-          <% } %>
+        <% } %>
 
         </tbody>
       </table>
@@ -82,8 +81,61 @@
 
       <%- include('../common/footer.ejs') %>
 
-      <script></script>
-      
+      <script>
+
+        const enterKey = (event) => {
+              if (event.code === "Enter") { 
+              // 엔터 키를 눌렀을 때 click 이벤트를 수동으로 발생
+              document.getElementById('sort-item').click();
+              }
+          }
+
+        document.getElementById('sort-item').addEventListener('click', async function(event) {
+            try {
+                const clickedItemId = event.target.id; // 클릭된 요소의 ID 가져오기
+                alert('Clicked Item ID:'+clickedItemId);  // 클릭된 요소의 ID 출력 (확인용)
+                
+                const searchInput = document.getElementById('searchInput');
+                const searchValue = searchInput.value;
+
+                const response = await fetch(`/board/search?q=${searchValue}&sort=${clickedItemId}`);
+
+                if (!response.ok) {
+                  const errorMessage = await response.text();
+                  alert(`게시글 검색 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
+                  throw err;
+                }
+                const result = await response.json();
+
+                alert(result.result)
+                tableUpdate(result);
+              } catch(err) {
+                console.log('에러 발생:', err)
+                alter(err)
+              }
+          });
+
+      function tableUpdate(result){ // 검색 결과를 동적으로 업데이트하는 함수
+        
+          const tableList = document.querySelector('.table-group-divider');
+          tableList.innerHTML = ''; // 기존의 내용 비우기
+
+          for (let i = 0; i < result.data.length; i++) {
+              const newRow = document.createElement('tr');
+              newRow.innerHTML = `
+                    <th scope="row">${i + 1}</th>
+                    <td>${result.data[i].board_title}</td>
+                    <td>${result.data[i].board_user_id}</td>
+                    <td>${result.data[i].board_liked}</td>
+                    <td>${result.data[i].board_view}</td>
+                    <td>${result.data[i].createdAt.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}</td>
+              `;
+              tableList.appendChild(newRow); // 새로 만든 행을 tableList에 추가
+          }
+      }
+  
+      </script>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+      
   </body>
 </html>
