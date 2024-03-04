@@ -29,26 +29,41 @@
         window.history.back(); // 이전 페이지로 이동
       }
 
-      // 글 조회 (fetch GET방식) 시 localStorage.getItem('token')하여 접근 권한 확인 함수 추가
+      async function create(){ // 작성한 게시글 저장
+        try{
+          const title = document.getElementById('titleInput').value
+          const content = document.getElementById('contentInput').value
 
-      async function create(){ // 작성한 글 저장
+          const response = await fetch('/board/form', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                    title: title, // 저장 될 내용
+                    content : content
+                })
+          })
 
-        const accessToken = localStorage.getItem('token')
+          if (!response.ok) { // 에러 상태를 처리 : response.ok가 true이면, 응답 상태 코드가 200번대(성공)
+              const errorMessage = await response.text();
+              alert(`작성된 게시글 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
+              throw err;
+          }
+          const result = await response.json()
 
-        const response = await fetch('/board/form', {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json',
-                      'Authorization': `Bearer ${accessToken}`
-                  },
-                  body: JSON.stringify(data)
-              })
-        const result = await response.json()
+          alert('게시글 저장 결과 : '+result.result+result.message)
 
-        alert('게시글 저장 결과 : ' + result.message)
+          if (result.result === true){
+            await fetch('/board/') // 게시글 리스트 조회 페이지로 이동
+          } else{
+            back()
+          }
 
-        await fetch(`/board/:${result.boardId}`) // 저장된 게시글 조회
-
+        } catch (err){
+          console.log('에러 발생:', err)
+          alter(err)
+        } 
       }
              
     </script>
