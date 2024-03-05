@@ -8,7 +8,7 @@ import { authRouter } from './routers/auth.js'
 import { boardRouter } from './routers/board.js'
 
 import { sequelizeLoader } from './loaders/sequelize.js'
-import { tokenChecker } from './utils/tokenChecker.js'
+import { tokenPasser } from './utils/tokenPasser.js'
 
 const app = express()
 
@@ -21,11 +21,8 @@ app.set('view engine', 'ejs')
 app.set('views', './src/views')
 
 await sequelizeLoader()
-
-// 토큰 유무를 판단하는 미들웨어
-app.route('/board/form').get(tokenChecker()).post(tokenChecker()) // 게시글 작성 폼 조회get, 저장 post(req.userId도 저장)
-app.route('/board/:boardId/edit').get(tokenChecker()) // 수정 페이지 조회get (조회해야만 저장 가능)
-app.route('/board/:boardId').delete(tokenChecker()) // 게시글 삭제
+ // 토큰 전달 미들웨어
+app.use(tokenPasser())
 
 // 라우터
 app.use('/auth', authRouter)
