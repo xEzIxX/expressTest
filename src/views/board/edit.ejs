@@ -25,7 +25,12 @@
 
     <script>
 
-      alert('<%= result.message %>')
+      alert('<%= result.message %>');
+      
+      if ('<%= result.result %>'== 'false') {
+          alert('편집 권한 여부 : <%= result.result %>');
+          window.history.back();
+      } 
 
 
       function back(){
@@ -36,6 +41,9 @@
         try {
           const path = window.location.pathname
           const boardId = path.split("/")[2]
+
+          const title = document.getElementById('titleInput').value
+          const content = document.getElementById('contentInput').value
 
           const response = await fetch(`/board/${boardId}/edit`, {
                     method: 'PUT',
@@ -59,27 +67,12 @@
           alert('게시글 저장 결과 : ' + result.message)
           alert('boardId : '+boardId)
 
-          await showEdited() // 편집 완료된 게시글을 조회하는 함수 호출
+          window.location.assign(`/board/${boardId}`)
 
         } catch (err) {
-              console.log('에러 발생:', err)
               alert(err)
         }
       }
-
-    async function showEdited() { // 편집 완료된 게시글 조회
-      try { 
-          const path = window.location.pathname
-          const boardId = path.split("/")[2]
-          alert('boardId : '+boardId)
-
-          await fetch(`/board/${boardId}`)
-
-      } catch (err) {
-          console.log('에러 발생:', err)
-          alert(err)
-      }
-    }
 
     </script>
   </body>
