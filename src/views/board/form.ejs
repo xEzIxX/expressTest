@@ -25,6 +25,14 @@
     <%- include('../common/footer.ejs') %>
 
     <script>
+            alert('게시글 폼 조회 여부 : <%= result.result %>');
+
+            if ('<%= result.result %>'== 'false') {
+                //alert('게시글 폼 조회 여부 : <%= result.result %>');
+                alert('<%= result.message %>');
+                window.history.back();
+            } 
+
       function back(){
         window.history.back(); // 이전 페이지로 이동
       }
@@ -52,10 +60,10 @@
           }
           const result = await response.json()
 
-          alert('게시글 저장 결과 : '+result.result+result.message)
+          alert(result.result+'게시글 저장 결과 : ' + result.message)
 
           if (result.result === true){
-            await fetch('/board/') // 게시글 리스트 조회 페이지로 이동
+            location.assign(`/board/`) // 게시글 리스트 조회 페이지로 이동
           } else{
             back()
           }
