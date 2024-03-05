@@ -29,7 +29,7 @@
   </div>
 
     <div class="d-flex justify-content-end p-2" role="search">
-        <button type="button" class="btn btn-outline-success"> 새 게시글 작성 </button>
+        <button type="button" class="btn btn-outline-success" onclick="getForm()"> 새 게시글 작성 </button>
     </div>
 
     <table class="table table-hover">
@@ -46,8 +46,8 @@
         <tbody class="table-group-divider">
 
         <% for(let i = 0; i< result.data.length; i++){ %>
-          <tr>
-            <th scope="row"><%= i+1 %></th>
+          <tr onclick="selectBoard('<%= result.data[i].board_id %>')">
+            <th scope="row" ><%= i+1 %></th>
             <td><%= result.data[i].board_title %></td>
             <td><%= result.data[i].userNickname %></td>
             <td><%= result.data[i].board_liked %></td>
@@ -82,89 +82,51 @@
       <%- include('../common/footer.ejs') %>
 
       <script>
-        let q, sort; // 이전에 선택하였던 검색, 정렬방식 저장을 위한 변수 선언
+        const path = window.location.pathname
+        let q = localStorage.getItem('q') || ''; // 이전에 검색한 검색어 저장을 위한 변수 선언
+
+        if (path==='/board') q='' // 게시글 리스트 조회 시 검색어 초기화
 
         const enterKey = (event) => {
           if (event.code === "Enter") { 
-              // 엔터 키를 눌렀을 때 click 이벤트를 수동으로 발생
-              document.getElementById('sort-item').click();
+              // 엔터 키를 눌렀을 때 검색 click 이벤트를 수동으로 발생
+              searchQuery();
               }
           }
+        
+        document.addEventListener('keydown', enterKey);
 
-        async function searchQuery () {
-          try {
-                alert(`[ 이전에 저장된 값 ] sort : ${sort}, q : ${q}`)
-
-                const searchInput = document.getElementById('searchInput'); // 검색어 
-                const searchValue = searchInput.value;
-
-                q = searchValue
-                alert(`[ 검색될 값 ] sort : ${sort}, q : ${q}`);
-                const response = await fetch(`/board/search?q=${q}&sort=${sort}`);
-
-                if (!response.ok) {
-                  const errorMessage = await response.text();
-                  alert(`게시글 검색 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
-                  throw err;
-                }
-                const result = await response.json();
-
-                alert(result.result)
-                tableUpdate(result);
-
-                alter('검색어'+searchValue)
-          } catch (err) {
-                console.log('에러 발생:', err)
-                alter(err)  
-          }
+        function selectBoard(boardId){
+          window.location.assign(`/board/:${boardId}`);    
         }
 
-        document.getElementById('sort-item').addEventListener('click', async function(event) { // 게시글 정렬
-            try {
-                alert(`[ 이전에 저장된 값 ] sort : ${sort}, q : ${q}`);
-                const clickedItemId = event.target.id; // 클릭된 요소의 ID 가져오기 (정렬 방식)
-                alert('정렬방식:'+clickedItemId);  // 클릭된 요소의 ID 출력
 
-                sort = clickedItemId
-                if(q==='') q=null
+        function searchQuery () { // 게시글 검색
 
-                alert(`[ 검색될 값 ] sort : ${sort}, q : ${q}`);
-                const response = await fetch(`/board/search?q=${q}&sort=${sort}`);
+                const searchInput = document.getElementById('searchInput');
+                const q = searchInput.value;
 
-                if (!response.ok) {
-                  const errorMessage = await response.text();
-                  alert(`게시글 검색 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
-                  throw err;
-                }
-                const result = await response.json();
+                localStorage.setItem('q', q); // 로컬 저장소에 저장
 
-                alert(result.result)
-                tableUpdate(result);
+                alert(`[ 검색어 ] : ${q}`);
+                window.location.assign(`/board/search?q=${q}&sort=`);      
+            }
 
-              } catch(err) {
-                console.log('에러 발생:', err)
-                alter(err)
-              }
-          });
 
-      function tableUpdate(result){
-          // 검색 결과를 동적으로 업데이트
-          const tableList = document.querySelector('.table-group-divider');
-          tableList.innerHTML = ''; // 기존의 내용 비우기
+        document.getElementById('sort-item').addEventListener('click', function(event) { // 게시글 정렬
+            
+            alert(`[ 현재 검색어 ] q : ${q}`);
+            const sort = event.target.id; // 클릭된 요소의 ID (정렬 방식) 가져오기 
+            alert(`[ 정렬방식 ] sort : ${sort}`);
 
-          for (let i = 0; i < result.data.length; i++) {
-              const newRow = document.createElement('tr');
-              newRow.innerHTML = `
-                    <th scope="row">${i + 1}</th>
-                    <td>${result.data[i].board_title}</td>
-                    <td>${result.data[i].board_user_id}</td>
-                    <td>${result.data[i].board_liked}</td>
-                    <td>${result.data[i].board_view}</td>
-                    <td>${result.data[i].createdAt.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' })}</td>
-              `;
-              tableList.appendChild(newRow); // 새로 만든 행을 tableList에 추가
-          }
-      }
+            const isQuery = Boolean(q)
+            if(!isQuery) q=''
+
+            window.location.assign(`/board/search?q=${q}&sort=${sort}`);
+
+      });
+
+
   
       </script>
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
