@@ -28,7 +28,7 @@ boardRouter.get(
 )
 
 boardRouter.get(
-    // 게시글 검색
+    // 검색,정렬된 게시글 리스트 페이지 조회
     '/search',
     wrapper(async (req, res) => {
         const queryDto = {
@@ -38,9 +38,13 @@ boardRouter.get(
         const searchedList = await boardService.searchList(queryDto)
 
         if (searchedList.result === true) {
-            return res.status(200).send(searchedList)
+            return res
+                .status(200)
+                .render('board/list.ejs', { result: searchedList })
         } else {
-            return res.status(500).send(searchedList)
+            return res
+                .status(500)
+                .render('board/list.ejs', { result: searchedList })
         }
     })
 )
@@ -52,7 +56,22 @@ boardRouter.get(
     '/form',
     wrapper(async (req, res) => {
         // console.log('게시글 작성 폼 조회 req.userId : ', req.userId)
-        return res.status(200).render('board/form.ejs')
+        const formAuthDto = {
+            userId: req.userId,
+            tokenMsg: req.tokenErrMsg,
+        }
+
+        const checedkFormAuth = await boardService.checkFormAuth(formAuthDto)
+
+        if (checedkFormAuth.result === true) {
+            return res
+                .status(200)
+                .render('board/form.ejs', { result: checedkFormAuth })
+        } else {
+            return res
+                .status(401)
+                .render('board/form.ejs', { result: checedkFormAuth })
+        }
     })
 )
 
@@ -67,6 +86,7 @@ boardRouter.post(
             title: req.body.title,
             content: req.body.content,
             userId: req.userId,
+            tokenMsg: req.tokenErrMsg || null,
         }
 
         const createdBoard = await boardService.createBoard(newBoardDto) // 작성한 글 저장 서비스 함수
@@ -89,6 +109,7 @@ boardRouter.get(
 
         const accessCheckDto = {
             userId: req.userId,
+            tokenMsg: req.tokenErrMsg || null,
             boardId: req.params.boardId.split(':')[1],
         }
 
@@ -159,6 +180,7 @@ boardRouter.delete(
 
         const accessCheckDto = {
             userId: req.userId,
+            tokenMsg: req.tokenErrMsg || null,
             boardId: req.params.boardId.split(':')[1],
         }
 
