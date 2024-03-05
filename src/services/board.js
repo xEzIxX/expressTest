@@ -3,9 +3,11 @@ import { Op } from 'sequelize'
 
 export class BoardService {
     async findAllBoard() {
-        const allBoard = await db.Board.findAndCountAll()
+        const allBoard = await db.Board.findAndCountAll({
+            order: [['createdAt', 'DESC']],
+        })
         // allBoard = {count:25, rows : [{dataValues:[], ...},{},..]}
-        
+
         const allBoardDataArray = allBoard.rows.map(board => board.dataValues)
 
         if (allBoard.count >= 0) {
@@ -57,7 +59,9 @@ export class BoardService {
             },
             order: [sortOrder], // 정렬 방식
         })
-        const searchedBoardDataArray = searchedBoard.rows.map(board => board.dataValues)
+        const searchedBoardDataArray = searchedBoard.rows.map(
+            board => board.dataValues
+        )
 
         if (searchedBoard.count >= 0) {
             return {
@@ -74,8 +78,33 @@ export class BoardService {
         }
     }
 
+    async checkFormAuth(formAuthDto) {
+        const isUSerId = Boolean(formAuthDto.userId)
+
+        // 로그인된 상태에만 게시글 작성 폼 조회 가능
+        if (isUSerId) {
+            return {
+                result: true,
+                message: '게시글 작성 폼 조회 성공',
+            }
+        } else {
+            return {
+                result: false,
+                message: formAuthDto.tokenMsg,
+            }
+        }
+    }
+
     async createBoard(newBoardDto) {
         // 작성한 게시글 저장
+
+        const isUSerId = Boolean(newBoardDto.userId)
+        if (!isUSerId) {
+            return {
+                result: false,
+                message: newBoardDto.tokenMsg,
+            }
+        }
 
         const newBoard = await db.Board.create({
             board_title: newBoardDto.title,
@@ -106,7 +135,13 @@ export class BoardService {
         const isValid = Boolean(
             accessCheckDto.userId === original.dataValues.board_user_id
         )
-        if (!isValid) return { result: false, message: '권한없음', data: null }
+        if (!isValid) {
+            return {
+                result: false,
+                message: accessCheckDto.tokenMsg || '권한없음',
+                data: null,
+            }
+        }
 
         if (original instanceof db.Board) {
             return {
@@ -195,7 +230,12 @@ export class BoardService {
         })
 
         const isValid = Boolean(board.board_user_id === accessCheckDto.userId)
-        if (!isValid) return { result: false, message: '삭제 권한 없음' }
+        if (!isValid) {
+            return {
+                result: false,
+                message: accessCheckDto.tokenMsg || '삭제 권한 없음',
+            }
+        }
 
         const deletedRowNum = await db.Board.destroy({
             where: { board_id: accessCheckDto.boardId },
