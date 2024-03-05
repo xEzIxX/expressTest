@@ -82,6 +82,8 @@
       <%- include('../common/footer.ejs') %>
 
       <script>
+        //alert('게시글 조회 : <%= result.message %>');
+
         const path = window.location.pathname
         let q = localStorage.getItem('q') || ''; // 이전에 검색한 검색어 저장을 위한 변수 선언
 
@@ -95,6 +97,10 @@
           }
         
         document.addEventListener('keydown', enterKey);
+        
+        function getForm(){
+          window.location.assign('/board/form');  
+        }
 
         function selectBoard(boardId){
           window.location.assign(`/board/:${boardId}`);    
