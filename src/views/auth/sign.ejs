@@ -79,8 +79,6 @@
                 const name = document.getElementById('nameInput').value;
                 const nickname = document.getElementById('nicknameInput').value;
 
-                //alert('email : '+email+' name, nickname '+name+nickname)
-
                 // API에 전송할 데이터
                 const data = {
                     email: email,
@@ -89,7 +87,6 @@
                     name : name,
                     nickname : nickname
                 };
-                alert('email data is : '+data.email+data.name+data.nickname)
 
                 // API에 POST 요청 보내기
                 const response = await fetch('/auth/sign', {
@@ -100,7 +97,7 @@
                     body: JSON.stringify(data)
                 });
 
-                if (!response.ok) { // 에러 상태를 처리 : response.ok가 true이면, 응답 상태 코드가 200번대(성공)
+                if (!response.ok) { 
                     const errorMessage = await response.text();
                     alert(`회원가입 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
                     return ;
@@ -108,18 +105,15 @@
 
                 // 응답 결과 JSON으로 파싱
                 const result = await response.json();
-                //const result = await response.text();
 
-                alert(`send한 문자열을 받아옵니다. : ${result.message}`);
-                alert(`회원가입 성공 여부 : ${result.result}`);
-                //alert(`회원가입 성공 여부 : ${result.result}, ${result.message}`);
+                alert(`회원가입 성공 ${result.result} : ${result.message}`);
 
                 if(result.result === true){
-                    await fetch('/auth/login'); // 회원가입 성공 시 로그인 페이지로 이동
+                    window.location.assign('/auth/login') // 회원가입 성공 시 로그인 페이지로 이동
                 }
 
             } catch (error) {
-                console.log('에러 발생:', err);
+                alert(err)
             }
             
         }

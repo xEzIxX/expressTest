@@ -30,10 +30,10 @@
 
             <div class="row p-3">
                 <div class="col-md-6 p-3">
-                    <button type="submit" class="btn btn-success" onclick= "performLogin()">로그인</button>
+                    <button type="submit" class="btn btn-success" onclick= "login()">로그인</button>
                 </div>
                 <div class="col-md-6">
-                    <button type="button" class="btn btn-secondary" onclick="redirectSign()">회원가입</button>
+                    <button type="button" class="btn btn-secondary" onclick="getSign()">회원가입</button>
                 </div>
             </div>
     </div>
@@ -41,7 +41,7 @@
     <%- include('../common/footer.ejs') %>
 
     <script>
-        async function performLogin() {
+        async function login() {
             try {
                 // 사용자가 입력한 이메일과 비밀번호 가져오기
                 const email = document.getElementById('emailInput').value;
@@ -67,34 +67,24 @@
                     alert(`로그인 정보가 올바르지 않습니다. (에러: ${response.status} - ${errorMessage})`);
                     return ;
                 }
-                // 이 if문이 없고 서비스 함수에서 받아온 값으로 처리하려고 하였으나 다음과 같은 오류 발생
-                // SyntaxError: Unexpected token 'N', "Not Found" is not valid JSON 
 
                 const result = await response.json(); // 응답 결과 JSON으로 파싱
-                localStorage.setItem('token', result.token)
+                
+                alert('result.message: ' + result.message);
 
                 if(result.result===true){
-                    alert('result.message: ' + result.message);
-                    await fetch('/') // 로그인 성공 시 메인 페이지로 이동
+                    window.location.assign('/') // 로그인 성공 시 메인 페이지로 이동
                 }
             
 
             } catch (err) {
                 alert(err)
-                throw(err)
             }
             
         }
 
-        async function redirectSign() {
-            try {
-                // fetch get 방식 "/auth/sign"
-            
-            } catch (err) {
-                alert(err)
-                throw(err)
-            }
-            
+        function getSign() {
+            window.location.assign('/auth/sign')
         }
 
 
