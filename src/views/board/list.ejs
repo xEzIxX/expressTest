@@ -11,7 +11,7 @@
   <div class="container overflow-hidden text-center p-5">
     <div class="d-flex p-3 " role="search" >
         <input class="form-control me-2" type="search" id="searchInput" aria-label="Search">
-        <button class="btn btn-outline-success"> 검색 </button>
+        <button class="btn btn-outline-success" onclick="searchQuery()" > 검색 </button>
     </div>
 
     <div class="d-flex dropdown justify-content-end p-2">
@@ -82,23 +82,25 @@
       <%- include('../common/footer.ejs') %>
 
       <script>
+        let q, sort; // 이전에 선택하였던 검색, 정렬방식 저장을 위한 변수 선언
 
         const enterKey = (event) => {
-              if (event.code === "Enter") { 
+          if (event.code === "Enter") { 
               // 엔터 키를 눌렀을 때 click 이벤트를 수동으로 발생
               document.getElementById('sort-item').click();
               }
           }
 
-        document.getElementById('sort-item').addEventListener('click', async function(event) {
-            try {
-                const clickedItemId = event.target.id; // 클릭된 요소의 ID 가져오기
-                alert('Clicked Item ID:'+clickedItemId);  // 클릭된 요소의 ID 출력 (확인용)
-                
-                const searchInput = document.getElementById('searchInput');
+        async function searchQuery () {
+          try {
+                alert(`[ 이전에 저장된 값 ] sort : ${sort}, q : ${q}`)
+
+                const searchInput = document.getElementById('searchInput'); // 검색어 
                 const searchValue = searchInput.value;
 
-                const response = await fetch(`/board/search?q=${searchValue}&sort=${clickedItemId}`);
+                q = searchValue
+                alert(`[ 검색될 값 ] sort : ${sort}, q : ${q}`);
+                const response = await fetch(`/board/search?q=${q}&sort=${sort}`);
 
                 if (!response.ok) {
                   const errorMessage = await response.text();
@@ -109,14 +111,44 @@
 
                 alert(result.result)
                 tableUpdate(result);
+
+                alter('검색어'+searchValue)
+          } catch (err) {
+                console.log('에러 발생:', err)
+                alter(err)  
+          }
+        }
+
+        document.getElementById('sort-item').addEventListener('click', async function(event) { // 게시글 정렬
+            try {
+                alert(`[ 이전에 저장된 값 ] sort : ${sort}, q : ${q}`);
+                const clickedItemId = event.target.id; // 클릭된 요소의 ID 가져오기 (정렬 방식)
+                alert('정렬방식:'+clickedItemId);  // 클릭된 요소의 ID 출력
+
+                sort = clickedItemId
+                if(q==='') q=null
+
+                alert(`[ 검색될 값 ] sort : ${sort}, q : ${q}`);
+                const response = await fetch(`/board/search?q=${q}&sort=${sort}`);
+
+                if (!response.ok) {
+                  const errorMessage = await response.text();
+                  alert(`게시글 검색 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
+                  throw err;
+                }
+                const result = await response.json();
+
+                alert(result.result)
+                tableUpdate(result);
+
               } catch(err) {
                 console.log('에러 발생:', err)
                 alter(err)
               }
           });
 
-      function tableUpdate(result){ // 검색 결과를 동적으로 업데이트하는 함수
-        
+      function tableUpdate(result){
+          // 검색 결과를 동적으로 업데이트
           const tableList = document.querySelector('.table-group-divider');
           tableList.innerHTML = ''; // 기존의 내용 비우기
 
