@@ -18,50 +18,52 @@
 
       <div class="mb-3 p-2">
         <button type="submit" class="btn btn-success" onclick= "back()"> 뒤로가기 </button>
-        <button type="button" class="btn btn-secondary" onclick="showEdit()"> 수정 하기 </button>
+        <button type="button" class="btn btn-secondary" onclick="getEdit()"> 수정 하기 </button>
         <button type="button" class="btn btn-secondary" onclick="deleteBoard()"> 삭제 하기 </button>
       </div>
 
       <%- include('../common/footer.ejs') %>
 
       <script>
-        // 함수는 아직 수정 중 입니다.
-        function back(){
 
+      alert('게시글 조회 : <%= result.message %>');
+
+      if ('<%= result.result %>'== 'false') {
+          //alert('게시글 조회 여부 : <%= result.result %>');
+          alert('<%= result.message %>');
+          window.history.back();
+      } 
+
+        function back(){
+          window.history.back(); // 이전 페이지로 이동
         }
 
-        function showEdit(){
+        async function getEdit() { // 권한이 있다면 수정 페이지로 이동
+            const path = window.location.pathname
+            const boardId = path.split("/")[2]
+
+            window.location.assign(`/board/${boardId}/edit`)
 
         }
 
         async function deleteBoard(){
           try {
             const path = window.location.pathname
-            alert('현재 경로 : '+path)
             const boardId = path.split("/")[2]
-            alert(boardId)
 
             const response = await fetch(`/board/${boardId}`, {
                       method: 'DELETE'
             })
-
-            /*
-            if (!response.ok) { // 에러 상태를 처리 : response.ok가 true이면, 응답 상태 코드가 200번대(성공)
-                const errorMessage = await response.text();
-                alert(`수정된 게시글 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
-            }
-            */
-
+            
             const result = await response.json()
-            alert('게시글 삭제 결과 : ' + result.message)
+            alert(result.result+'게시글 삭제 결과 : '+result.message)
 
             if (result.result===true){
-              // 게시글 리스트 조회 페이지로 이동
+              window.location.assign(`/board`)// 게시글 리스트 조회 페이지로 이동
             }
 
           } catch (err){
-            console.log(err)
-            alert(err.message)
+            alert(err)
           }
         }
       </script>
