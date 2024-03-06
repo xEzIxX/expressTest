@@ -169,17 +169,18 @@ boardRouter.get(
     '/:boardId',
     wrapper(async (req, res) => {
         const isToken = Boolean(req.userId)
+
         const boardIdDto = {
+            userId: req.userId,
             boardId: req.params.boardId.split(':')[1],
         }
-
         const foundBoard = await boardService.getBoardById(boardIdDto) // 게시글 아이디 boardId와 일치하는 조회할 게시글
 
         if (foundBoard.result === true) {
             return res.status(200).render('board/board.ejs', {
                 result: foundBoard,
                 isToken : isToken,
-            }) // 게시글 조회
+            })
         } else {
             return res.status(404).render('board/board.ejs', {
                 result: foundBoard,

@@ -5,7 +5,7 @@ export class BoardService {
     async findAllBoard() {
         const allBoard = await db.Board.findAndCountAll({
             order: [['createdAt', 'DESC']],
-            include: [{model: db.User, attributes : ['user_nickName']}]
+            include: [{ model: db.User, attributes: ['user_nickName'] }],
         })
         // console.log(allBoard.rows[0].dataValues.User.dataValues) // 출력 : { user_nickName : '닉네임' }
         // allBoard = {count:25, rows : [{dataValues:[], ...},{},..]}
@@ -199,27 +199,33 @@ export class BoardService {
             where: { board_id: boardIdDto.boardId },
         })
 
+        const isAuth = Boolean( // 현재 사용자와 게시글 작성자의 일치 여부
+            foundBoard.dataValues.board_user_id === boardIdDto.userId
+        )
+
         if (foundBoard instanceof db.Board) {
             return {
                 result: true,
                 message: '게시글 조회 성공',
                 data: {
-                    // writerId : foundBoard.dataValues.board_writer,
                     title: foundBoard.dataValues.board_title,
                     content: foundBoard.dataValues.board_content,
                 },
+                isAuth : isAuth,
             }
         } else if (foundBoard === null) {
             return {
                 result: false,
                 message: '게시글 미존재',
                 data: null,
+                isAuth : isAuth,
             }
         } else {
             return {
                 result: false,
                 message: '게시글 조회 오류',
                 data: null,
+                isAuth : isAuth,
             }
         }
     }
