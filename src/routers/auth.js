@@ -9,7 +9,8 @@ const authService = new AuthService()
 
 // 로그인
 authRouter.get('/login', (req, res) => {
-    return res.render('auth/login.ejs')
+    const isToken = Boolean(req.userId)
+    return res.render('auth/login.ejs', { isToken : isToken })
 })
 
 authRouter.post(
@@ -39,7 +40,8 @@ authRouter.post(
 
 // 회원가입
 authRouter.get('/sign', (req, res) => {
-    return res.render('auth/sign.ejs')
+    const isToken = Boolean(req.userId)
+    return res.render('auth/sign.ejs', { isToken : isToken })
 })
 
 authRouter.post(

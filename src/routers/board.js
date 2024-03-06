@@ -13,16 +13,19 @@ boardRouter.get(
     // 게시글 리스트 페이지 조회
     '/',
     wrapper(async (req, res) => {
+        const isToken = Boolean(req.userId)
         const foundAllBoard = await boardService.findAllBoard() // 모든 게시글 반환 서비스 함수
 
         if (foundAllBoard.result === true) {
-            return res
-                .status(200)
-                .render('board/list.ejs', { result: foundAllBoard })
+            return res.status(200).render('board/list.ejs', {
+                result: foundAllBoard,
+                isToken : isToken,
+            })
         } else {
-            return res
-                .status(500)
-                .render('board/list.ejs', { result: foundAllBoard })
+            return res.status(500).render('board/list.ejs', {
+                result: foundAllBoard,
+                isToken : isToken,
+            })
         }
     })
 )
@@ -31,6 +34,8 @@ boardRouter.get(
     // 검색,정렬된 게시글 리스트 페이지 조회
     '/search',
     wrapper(async (req, res) => {
+        const isToken = Boolean(req.userId)
+
         const queryDto = {
             q: req.query.q,
             sort: req.query.sort,
@@ -38,13 +43,15 @@ boardRouter.get(
         const searchedList = await boardService.searchList(queryDto)
 
         if (searchedList.result === true) {
-            return res
-                .status(200)
-                .render('board/list.ejs', { result: searchedList })
+            return res.status(200).render('board/list.ejs', {
+                result: searchedList,
+                isToken : isToken,
+            })
         } else {
-            return res
-                .status(500)
-                .render('board/list.ejs', { result: searchedList })
+            return res.status(500).render('board/list.ejs', {
+                result: searchedList,
+                isToken : isToken,
+            })
         }
     })
 )
@@ -56,6 +63,8 @@ boardRouter.get(
     '/form',
     wrapper(async (req, res) => {
         // console.log('게시글 작성 폼 조회 req.userId : ', req.userId)
+        const isToken = Boolean(req.userId)
+
         const formAuthDto = {
             userId: req.userId,
             tokenMsg: req.tokenErrMsg,
@@ -64,13 +73,15 @@ boardRouter.get(
         const checedkFormAuth = await boardService.checkFormAuth(formAuthDto)
 
         if (checedkFormAuth.result === true) {
-            return res
-                .status(200)
-                .render('board/form.ejs', { result: checedkFormAuth })
+            return res.status(200).render('board/form.ejs', {
+                result: checedkFormAuth,
+                isToken : isToken,
+            })
         } else {
-            return res
-                .status(401)
-                .render('board/form.ejs', { result: checedkFormAuth })
+            return res.status(401).render('board/form.ejs', {
+                result: checedkFormAuth,
+                isToken : isToken,
+            })
         }
     })
 )
@@ -106,6 +117,7 @@ boardRouter.get(
     '/:boardId/edit',
     wrapper(async (req, res) => {
         // console.log('수정 페이지 조회 라우터 :' + req.userId)
+        const isToken = Boolean(req.userId)
 
         const accessCheckDto = {
             userId: req.userId,
@@ -117,13 +129,15 @@ boardRouter.get(
 
         // console.log('라우터에서 최종 전달 객체 : ', foundOriginal)
         if (foundOriginal.result === true) {
-            return res
-                .status(200)
-                .render('board/edit.ejs', { result: foundOriginal })
+            return res.status(200).render('board/edit.ejs', {
+                result: foundOriginal,
+                isToken : isToken,
+            })
         } else {
-            return res
-                .status(401)
-                .render('board/edit.ejs', { result: foundOriginal })
+            return res.status(401).render('board/edit.ejs', {
+                result: foundOriginal,
+                isToken : isToken,
+            })
         }
     })
 )
@@ -154,6 +168,7 @@ boardRouter.get(
     // 게시글 아이디가 boardId인 게시글 조회
     '/:boardId',
     wrapper(async (req, res) => {
+        const isToken = Boolean(req.userId)
         const boardIdDto = {
             boardId: req.params.boardId.split(':')[1],
         }
@@ -161,13 +176,15 @@ boardRouter.get(
         const foundBoard = await boardService.getBoardById(boardIdDto) // 게시글 아이디 boardId와 일치하는 조회할 게시글
 
         if (foundBoard.result === true) {
-            return res
-                .status(200)
-                .render('board/board.ejs', { result: foundBoard }) // 게시글 조회
+            return res.status(200).render('board/board.ejs', {
+                result: foundBoard,
+                isToken : isToken,
+            }) // 게시글 조회
         } else {
-            return res
-                .status(404)
-                .render('board/board.ejs', { result: foundBoard })
+            return res.status(404).render('board/board.ejs', {
+                result: foundBoard,
+                isToken : isToken,
+            })
         }
     })
 )
