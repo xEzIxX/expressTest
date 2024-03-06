@@ -69,13 +69,10 @@
                 }
 
                 const result = await response.json(); // 응답 결과 JSON으로 파싱
-                
-                alert('result.message: ' + result.message);
 
                 if(result.result===true){
                     window.location.assign('/') // 로그인 성공 시 메인 페이지로 이동
                 }
-            
 
             } catch (err) {
                 alert(err)

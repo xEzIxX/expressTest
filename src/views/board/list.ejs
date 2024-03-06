@@ -82,8 +82,6 @@
       <%- include('../common/footer.ejs') %>
 
       <script>
-        //alert('게시글 조회 : <%= result.message %>');
-
         const path = window.location.pathname
         let q = localStorage.getItem('q') || ''; // 이전에 검색한 검색어 저장을 위한 변수 선언
 
@@ -113,18 +111,13 @@
                 const q = searchInput.value;
 
                 localStorage.setItem('q', q); // 로컬 저장소에 저장
-
-                alert(`[ 검색어 ] : ${q}`);
                 window.location.assign(`/board/search?q=${q}&sort=`);      
             }
 
 
         document.getElementById('sort-item').addEventListener('click', function(event) { // 게시글 정렬
             
-            alert(`[ 현재 검색어 ] q : ${q}`);
             const sort = event.target.id; // 클릭된 요소의 ID (정렬 방식) 가져오기 
-            alert(`[ 정렬방식 ] sort : ${sort}`);
-
             const isQuery = Boolean(q)
             if(!isQuery) q=''
 

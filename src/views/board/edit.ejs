@@ -25,10 +25,8 @@
 
     <script>
 
-      alert('<%= result.message %>');
       
       if ('<%= result.result %>'== 'false') {
-          alert('편집 권한 여부 : <%= result.result %>');
           window.history.back();
       } 
 
@@ -55,18 +53,8 @@
                       content : content
                   })
                 })
-          
-          if (!response.ok) { // 에러 상태를 처리 : response.ok가 true이면, 응답 상태 코드가 200번대(성공)
-              const errorMessage = await response.text();
-              alert(`수정된 게시글 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
-              throw err;
-          }
 
           const result = await response.json()
-
-          alert('게시글 저장 결과 : ' + result.message)
-          alert('boardId : '+boardId)
-
           window.location.assign(`/board/${boardId}`)
 
         } catch (err) {

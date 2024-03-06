@@ -37,7 +37,6 @@
       async function logout(){
           const response = await fetch('/auth/logout');
           const result = await response.json();
-          alert('result.message: ' + result.message);
           window.location.reload(); // 새로고침
       }
   </script>

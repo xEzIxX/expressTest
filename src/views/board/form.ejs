@@ -25,11 +25,7 @@
     <%- include('../common/footer.ejs') %>
 
     <script>
-            alert('게시글 폼 조회 여부 : <%= result.result %>');
-
             if ('<%= result.result %>'== 'false') {
-                //alert('게시글 폼 조회 여부 : <%= result.result %>');
-                alert('<%= result.message %>');
                 window.history.back();
             } 
 
@@ -53,11 +49,6 @@
                 })
           })
 
-          if (!response.ok) { // 에러 상태를 처리 : response.ok가 true이면, 응답 상태 코드가 200번대(성공)
-              const errorMessage = await response.text();
-              alert(`작성된 게시글 중 에러 발생 (에러: ${response.status} - ${errorMessage})`);
-              throw err;
-          }
           const result = await response.json()
 
           alert(result.result+'게시글 저장 결과 : ' + result.message)

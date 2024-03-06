@@ -26,11 +26,7 @@
 
       <script>
 
-      alert('게시글 조회 : <%= result.message %>');
-
-      if ('<%= result.result %>'== 'false') {
-          //alert('게시글 조회 여부 : <%= result.result %>');
-          alert('<%= result.message %>');
+      if ('<%= result.result %>' === 'false') {
           window.history.back();
       } 
 
@@ -56,7 +52,7 @@
             })
             
             const result = await response.json()
-            alert(result.result+'게시글 삭제 결과 : '+result.message)
+
 
             if (result.result===true){
               window.location.assign(`/board`)// 게시글 리스트 조회 페이지로 이동
