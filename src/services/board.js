@@ -199,9 +199,14 @@ export class BoardService {
             where: { board_id: boardIdDto.boardId },
         })
 
-        const isAuth = Boolean( // 현재 사용자와 게시글 작성자의 일치 여부
+        const isAuth = Boolean(
+            // 현재 사용자와 게시글 작성자의 일치 여부
             foundBoard.dataValues.board_user_id === boardIdDto.userId
         )
+
+        await db.Board.increment('board_view', {
+            where: { board_id: boardIdDto.boardId },
+        })
 
         if (foundBoard instanceof db.Board) {
             return {
@@ -211,21 +216,21 @@ export class BoardService {
                     title: foundBoard.dataValues.board_title,
                     content: foundBoard.dataValues.board_content,
                 },
-                isAuth : isAuth,
+                isAuth,
             }
         } else if (foundBoard === null) {
             return {
                 result: false,
                 message: '게시글 미존재',
                 data: null,
-                isAuth : isAuth,
+                isAuth,
             }
         } else {
             return {
                 result: false,
                 message: '게시글 조회 오류',
                 data: null,
-                isAuth : isAuth,
+                isAuth,
             }
         }
     }
