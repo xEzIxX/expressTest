@@ -15,13 +15,13 @@
         <nav class="navbar bg-body-tertiary ms-auto">
             <% if (isToken) { %>
                 <!-- 토큰이 있을 때 보여질 내용 -->
-                <a href="mypage">
+                <a href="/mypage">
                     <button class="btn btn-outline-success me-2" type="button">마이페이지</button>
                 </a>
                     <button class="btn btn-outline-success me-2" type="button" onclick="logout()">로그아웃</button>
             <% } else { %>
                 <!-- 토큰이 없을 때 보여질 내용 -->
-                <a href="auth/login">
+                <a href="/auth/login">
                     <button class="btn btn-outline-success me-2" type="button">로그인</button>
                 </a>
             <% } %>
@@ -38,5 +38,6 @@
           const response = await fetch('/auth/logout');
           const result = await response.json();
           alert('result.message: ' + result.message);
+          window.location.reload(); // 새로고침
       }
   </script>
