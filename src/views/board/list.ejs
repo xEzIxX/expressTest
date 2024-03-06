@@ -49,7 +49,7 @@
           <tr onclick="selectBoard('<%= result.data[i].board_id %>')">
             <th scope="row" ><%= i+1 %></th>
             <td><%= result.data[i].board_title %></td>
-            <td><%= result.data[i].userNickname %></td>
+            <td><%= result.data[i].User.dataValues.user_nickName %></td>
             <td><%= result.data[i].board_liked %></td>
             <td><%= result.data[i].board_view %></td>
             <td><%= result.data[i].createdAt.toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) %></td>
@@ -128,6 +128,7 @@
 
   
       </script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
       
   </body>
 </html>
