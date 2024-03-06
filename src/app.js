@@ -17,11 +17,14 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
+app.use(express.static('./src/public'))
+
 app.set('view engine', 'ejs')
 app.set('views', './src/views')
 
 await sequelizeLoader()
- // 토큰 전달 미들웨어
+
+// 토큰 전달 미들웨어
 app.use(tokenPasser())
 
 // 라우터
