@@ -5,7 +5,9 @@ export class BoardService {
     async findAllBoard() {
         const allBoard = await db.Board.findAndCountAll({
             order: [['createdAt', 'DESC']],
+            include: [{model: db.User, attributes : ['user_nickName']}]
         })
+        // console.log(allBoard.rows[0].dataValues.User.dataValues) // 출력 : { user_nickName : '닉네임' }
         // allBoard = {count:25, rows : [{dataValues:[], ...},{},..]}
 
         const allBoardDataArray = allBoard.rows.map(board => board.dataValues)
@@ -30,16 +32,16 @@ export class BoardService {
 
         switch (queryDto.sort) {
             case 'date_desc':
-                sortOrder = ['createdAt', 'DESC'] 
+                sortOrder = ['createdAt', 'DESC']
                 break
             case 'date_asc':
                 sortOrder = ['createdAt', 'ASC']
                 break
             case 'liked_desc':
                 sortOrder = ['board_liked', 'DESC']
-                break     
+                break
             case 'liked_asc':
-                sortOrder = ['board_liked', 'ASC'] 
+                sortOrder = ['board_liked', 'ASC']
                 break
             case 'views_desc':
                 sortOrder = ['board_view', 'DESC']
