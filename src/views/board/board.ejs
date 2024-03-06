@@ -18,8 +18,10 @@
 
       <div class="mb-3 p-2">
         <button type="submit" class="btn btn-success" onclick= "back()"> 뒤로가기 </button>
+        <% if ( result.isAuth ) { %>
         <button type="button" class="btn btn-secondary" onclick="getEdit()"> 수정 하기 </button>
         <button type="button" class="btn btn-secondary" onclick="deleteBoard()"> 삭제 하기 </button>
+        <% } %>
       </div>
 
       <%- include('../common/footer.ejs') %>
