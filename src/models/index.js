@@ -50,7 +50,6 @@ db.User.hasMany(db.Board_like, {
 })
 db.Board_like.belongsTo(db.User)
 
-
 // 게시글 좋아요 Board_like 테이블의 관계
 db.Board.hasMany(db.Board_like, {
     // 게시글 테이블은 게시글 좋아요 테이블과 1:N 관계
@@ -65,7 +64,6 @@ db.User.hasMany(db.Board_like, {
     foreignKey: 'board_like_user_id',
 })
 db.Board_like.belongsTo(db.User)
-
 
 // 댓글 좋아요 Comment_like 테이블의 관계
 db.Comment.hasMany(db.Comment_like, {
@@ -82,12 +80,11 @@ db.User.hasMany(db.Comment_like, {
 })
 db.Comment_like.belongsTo(db.User)
 
-
 // 유저 팔로우 User_follow 테이블의 관계
 db.User.hasMany(db.User_follow, {
     // 댓글 테이블은 댓글 좋아요 테이블과 1:N 관계
     as: 'user_follower',
-    foreignKey: 'User_follow_follower_id',
+    foreignKey: 'user_follow_follower_id',
 })
 db.User_follow.belongsTo(db.User)
 

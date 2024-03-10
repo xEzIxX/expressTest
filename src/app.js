@@ -33,7 +33,7 @@ app.use('/board', boardRouter)
 
 // 에러 핸들러
 app.use((err, req, res, next) => {
-    console.log('에러 핸들러에서 처리된 서버 오류', err)
+    console.log(err)
     res.status(500).send({ message: '서버 오류' })
 })
 
