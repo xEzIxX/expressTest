@@ -19,12 +19,12 @@ boardRouter.get(
         if (foundAllBoard.result === true) {
             return res.status(200).render('board/list.ejs', {
                 result: foundAllBoard,
-                isToken : isToken,
+                isToken,
             })
         } else {
             return res.status(500).render('board/list.ejs', {
                 result: foundAllBoard,
-                isToken : isToken,
+                isToken,
             })
         }
     })
@@ -45,12 +45,12 @@ boardRouter.get(
         if (searchedList.result === true) {
             return res.status(200).render('board/list.ejs', {
                 result: searchedList,
-                isToken : isToken,
+                isToken,
             })
         } else {
             return res.status(500).render('board/list.ejs', {
                 result: searchedList,
-                isToken : isToken,
+                isToken,
             })
         }
     })
@@ -75,12 +75,12 @@ boardRouter.get(
         if (checedkFormAuth.result === true) {
             return res.status(200).render('board/form.ejs', {
                 result: checedkFormAuth,
-                isToken : isToken,
+                isToken,
             })
         } else {
             return res.status(401).render('board/form.ejs', {
                 result: checedkFormAuth,
-                isToken : isToken,
+                isToken,
             })
         }
     })
@@ -131,12 +131,12 @@ boardRouter.get(
         if (foundOriginal.result === true) {
             return res.status(200).render('board/edit.ejs', {
                 result: foundOriginal,
-                isToken : isToken,
+                isToken,
             })
         } else {
             return res.status(401).render('board/edit.ejs', {
                 result: foundOriginal,
-                isToken : isToken,
+                isToken,
             })
         }
     })
@@ -179,12 +179,12 @@ boardRouter.get(
         if (foundBoard.result === true) {
             return res.status(200).render('board/board.ejs', {
                 result: foundBoard,
-                isToken : isToken,
+                isToken,
             })
         } else {
             return res.status(404).render('board/board.ejs', {
                 result: foundBoard,
-                isToken : isToken,
+                isToken,
             })
         }
     })
