@@ -21,11 +21,6 @@ export function Board(sequelize, DataTypes) {
                 allowNull: false,
                 defaultValue: 0,
             },
-            board_liked: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                defaultValue: 0,
-            },
             board_user_id: {
                 type: DataTypes.UUID,
                 references: {

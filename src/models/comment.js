@@ -12,9 +12,6 @@ export function Comment(sequelize, DataTypes) {
                 type: DataTypes.STRING(512),
                 allowNull: false,
             },
-            comment_liked: {
-                type: DataTypes.INTEGER,
-            },
             comment_user_id: {
                 type: DataTypes.UUID,
                 field: 'comment_writer',
