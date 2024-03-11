@@ -400,6 +400,100 @@ export class BoardService {
         }
     }
 
+    async checkFollow(boardIdDto) {
+
+        const followed = await db.User_follow.findOne({
+                user_follow_follower_id: boardIdDto.userId,
+                user_follow_followed_id : db.sequelize.literal(`(
+                    SELECT board_user_id
+                    FROM Board
+                    WHERE board_id = '${boardIdDto.boardId}'
+                )`)
+            ,
+        })
+
+        if (followed instanceof db.User_follow) {
+            return {
+                result: true,
+                message: '이미 팔로우한 유저',
+                isFollowed: true,
+            }
+        } else if (followed === null) {
+            return {
+                result: true,
+                message: '팔로우 하지 않은 유저',
+                isFollowed: false,
+            }
+        } else {
+            return { result: false, message: '서버 오류' }
+        }
+    }
+
+    async followUser(boardIdDto) {
+        const followed  = await db.User_follow.findOne({ // 이미 팔로우한 유저인지 확인
+            user_follow_follower_id: boardIdDto.userId, 
+            user_follow_followed_id : db.sequelize.literal(`(
+                SELECT board_user_id
+                FROM Board
+                WHERE board_id = '${boardIdDto.boardId}'
+            )`)
+        })
+
+        if (followed instanceof db.User_follow) {
+            return {
+                result: false,
+                message: '이미 팔로우 추가한 유저',
+            }
+        } else if (!(followed === null)) {
+            return { result: false, message: '서버 오류' }
+        }
+
+        const newFollow  = await db.User_follow.create({
+            user_follow_follower_id: boardIdDto.userId, 
+            user_follow_followed_id : db.sequelize.literal(`(
+                SELECT board_user_id
+                FROM Board
+                WHERE board_id = '${boardIdDto.boardId}'
+            )`)
+        })
+
+        if (newFollow instanceof db.User_follow) {
+            return {
+                result: true,
+                message: '팔로우 저장 성공',
+            }
+        } else {
+            return {
+                result: false,
+                message: '팔로우 저장 실패',
+            }
+        }
+    }
+
+    async deleteFollow(accessCheckDto) {
+
+        const followedUser = await db.Board.findOne({
+            attributes: ['board_user_id'],
+            where: { board_id : accessCheckDto.boardId }
+        })
+
+        const deletedRowNum = await db.User_follow.destroy({
+            where: {
+                user_follow_follower_id: accessCheckDto.userId, 
+                user_follow_followed_id: followedUser.dataValues.board_user_id
+            }
+        })
+
+        if (deletedRowNum > 0) {
+            return { result: true, message: '팔로우 취소 성공' }
+        } else if (deletedRowNum === 0) {
+            // 삭제되지 않았다면 현재 유저는 팔로우하지 않았던 것
+            return { result: false, message: '팔로우 취소 실패' }
+        } else {
+            return { result: false, message: tokenMsg || '서버 오류' }
+        }
+    }
+
     async updateView(viewDto) {
         const updatedRowsNum = await db.Board.update(
             {
