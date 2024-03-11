@@ -279,7 +279,7 @@ boardRouter.get(
             boardId: req.params.boardId.split(':')[1],
         }
 
-        const checkedfollow = await boardService.checkfollow(boardIdDto)
+        const checkedfollow = await boardService.checkFollow(boardIdDto)
 
         if (checkedfollow.result === true) {
             return res.status(200).send(checkedfollow)
@@ -335,7 +335,7 @@ boardRouter.put(
     wrapper(async (req, res) => {
         const viewDto = {
             boardId: req.params.boardId.split(':')[1],
-            view : req.body.view
+            view: req.body.view,
         }
 
         const updatedView = await boardService.updateView(viewDto)
@@ -346,5 +346,4 @@ boardRouter.put(
             return res.status(500).send(updatedView)
         }
     })
-
 )

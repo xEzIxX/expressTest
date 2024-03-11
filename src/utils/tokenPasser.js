@@ -11,7 +11,6 @@ export function tokenPasser() {
 
             req.userId = decoded.userId
 
-            console.log('토큰 전달 미들웨어 userId만 넘겨줌 : ', req.userId)
             next()
         } catch (err) {
             let message

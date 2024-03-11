@@ -20,7 +20,7 @@ export class BoardService {
             include: [
                 {
                     model: db.User,
-                    attributes: [],
+                    attributes: [], // 이 속성이 없으면 User : User{} 속성도 dataValues에 추가
                 },
                 {
                     model: db.Board_like,
@@ -39,19 +39,19 @@ export class BoardService {
         if (allBoard.count.length > 0) {
             return {
                 result: true,
-                message: '게시글 조회 성공',
+                message: '게시글 리스트 조회 성공',
                 data: allBoardDataArray,
             }
         } else if (allBoard.count.length === 0) {
             return {
                 result: true,
-                message: '게시글 조회 성공',
+                message: '게시글 리스트 조회 성공',
                 data: null,
             }
         } else {
             return {
                 result: false,
-                message: '게시글 조회 실패',
+                message: '게시글 리스트 조회 실패',
                 data: null,
             }
         }
@@ -61,6 +61,7 @@ export class BoardService {
         let sortOrder
 
         switch (queryDto.sort) {
+            // 정렬 방식 수정 예정 (좋아요/ 조회수 테이블 추가로 인한..)
             case 'date_desc':
                 sortOrder = ['createdAt', 'DESC']
                 break
@@ -118,6 +119,7 @@ export class BoardService {
             ],
             group: ['Board.board_id'],
         })
+
         const searchedBoardDataArray = searchedBoard.rows.map(
             board => board.dataValues
         )
@@ -125,13 +127,13 @@ export class BoardService {
         if (searchedBoard.count >= 0) {
             return {
                 result: true,
-                message: '검색된 게시글 조회 성공',
+                message: '검색된 게시글 리스트 조회 성공',
                 data: searchedBoardDataArray,
             }
         } else {
             return {
                 result: false,
-                message: '검색된 게시글 조회 실패',
+                message: '검색된 게시글 리스트 조회 실패',
                 data: null,
             }
         }
@@ -337,7 +339,7 @@ export class BoardService {
         if (deletedRowNum > 0) {
             return { result: true, message: '삭제 성공' }
         } else if (deletedRowNum === 0) {
-            return { result: true, message: '삭제할 게시글이 존재하지 않음' }
+            return { result: false, message: '삭제할 게시글이 존재하지 않음' }
         } else {
             return { result: false, message: '삭제 실패' }
         }
@@ -401,15 +403,13 @@ export class BoardService {
     }
 
     async checkFollow(boardIdDto) {
-
         const followed = await db.User_follow.findOne({
-                user_follow_follower_id: boardIdDto.userId,
-                user_follow_followed_id : db.sequelize.literal(`(
+            user_follow_follower_id: boardIdDto.userId,
+            user_follow_followed_id: db.sequelize.literal(`(
                     SELECT board_user_id
                     FROM Board
                     WHERE board_id = '${boardIdDto.boardId}'
-                )`)
-            ,
+                )`),
         })
 
         if (followed instanceof db.User_follow) {
@@ -430,13 +430,14 @@ export class BoardService {
     }
 
     async followUser(boardIdDto) {
-        const followed  = await db.User_follow.findOne({ // 이미 팔로우한 유저인지 확인
-            user_follow_follower_id: boardIdDto.userId, 
-            user_follow_followed_id : db.sequelize.literal(`(
+        const followed = await db.User_follow.findOne({
+            // 이미 팔로우한 유저인지 확인
+            user_follow_follower_id: boardIdDto.userId,
+            user_follow_followed_id: db.sequelize.literal(`(
                 SELECT board_user_id
                 FROM Board
                 WHERE board_id = '${boardIdDto.boardId}'
-            )`)
+            )`),
         })
 
         if (followed instanceof db.User_follow) {
@@ -448,13 +449,13 @@ export class BoardService {
             return { result: false, message: '서버 오류' }
         }
 
-        const newFollow  = await db.User_follow.create({
-            user_follow_follower_id: boardIdDto.userId, 
-            user_follow_followed_id : db.sequelize.literal(`(
+        const newFollow = await db.User_follow.create({
+            user_follow_follower_id: boardIdDto.userId,
+            user_follow_followed_id: db.sequelize.literal(`(
                 SELECT board_user_id
                 FROM Board
                 WHERE board_id = '${boardIdDto.boardId}'
-            )`)
+            )`),
         })
 
         if (newFollow instanceof db.User_follow) {
@@ -471,17 +472,16 @@ export class BoardService {
     }
 
     async deleteFollow(accessCheckDto) {
-
         const followedUser = await db.Board.findOne({
             attributes: ['board_user_id'],
-            where: { board_id : accessCheckDto.boardId }
+            where: { board_id: accessCheckDto.boardId },
         })
 
         const deletedRowNum = await db.User_follow.destroy({
             where: {
-                user_follow_follower_id: accessCheckDto.userId, 
-                user_follow_followed_id: followedUser.dataValues.board_user_id
-            }
+                user_follow_follower_id: accessCheckDto.userId,
+                user_follow_followed_id: followedUser.dataValues.board_user_id,
+            },
         })
 
         if (deletedRowNum > 0) {
@@ -500,11 +500,10 @@ export class BoardService {
                 board_view: viewDto.view,
             },
             {
-                where: { board_id: viewDto.boardId }, // 게시글 id
+                where: { board_id: viewDto.boardId },
             }
         )
 
-        console.log(updatedRowsNum)
         if (updatedRowsNum[0] > 0) {
             return { result: true, message: '게시글 조회수 업데이트 완료' }
         } else {
