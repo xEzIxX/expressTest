@@ -5,18 +5,48 @@ export class BoardService {
     async findAllBoard() {
         const allBoard = await db.Board.findAndCountAll({
             order: [['createdAt', 'DESC']],
-            include: [{ model: db.User, attributes: ['user_nickName'] }],
+            attributes: {
+                include: [
+                    [db.sequelize.col('User.user_nickName'), 'board_writer'],
+                    [
+                        db.sequelize.fn(
+                            'COUNT',
+                            db.sequelize.col('Board_likes.board_like_id')
+                        ),
+                        'board_like',
+                    ],
+                ],
+            },
+            include: [
+                {
+                    model: db.User,
+                    attributes: [],
+                },
+                {
+                    model: db.Board_like,
+                    attributes: [],
+                    where: {
+                        board_like_board_id: db.sequelize.col('Board.board_id'),
+                    },
+                    required: false,
+                },
+            ],
+            group: ['Board.board_id'], // board_id를 기준으로 그룹화
         })
-        // console.log(allBoard.rows[0].dataValues.User.dataValues) // 출력 : { user_nickName : '닉네임' }
-        // allBoard = {count:25, rows : [{dataValues:[], ...},{},..]}
-
         const allBoardDataArray = allBoard.rows.map(board => board.dataValues)
+        // allBoard.count : [ { board_id: '~', count: 1 },{},... ]
 
-        if (allBoard.count >= 0) {
+        if (allBoard.count.length > 0) {
             return {
                 result: true,
                 message: '게시글 조회 성공',
                 data: allBoardDataArray,
+            }
+        } else if (allBoard.count.length === 0) {
+            return {
+                result: true,
+                message: '게시글 조회 성공',
+                data: null,
             }
         } else {
             return {
@@ -59,7 +89,34 @@ export class BoardService {
                     [Op.substring]: queryDto.q, // title에 검색어 포함 여부 확인
                 },
             },
+            attributes: {
+                include: [
+                    [db.sequelize.col('User.user_nickname'), 'board_writer'],
+                    [
+                        db.sequelize.fn(
+                            'COUNT',
+                            db.sequelize.col('Board_likes.board_like_id')
+                        ),
+                        'board_like',
+                    ],
+                ]
+            },
             order: [sortOrder], // 정렬 방식
+            include: [
+                {
+                    model: db.User,
+                    attributes: [],
+                },
+                {
+                    model: db.Board_like,
+                    attributes: [],
+                    where: {
+                        board_like_board_id: db.sequelize.col('Board.board_id'),
+                    },
+                    required: false,
+                },
+            ],
+            group: ['Board.board_id'], 
         })
         const searchedBoardDataArray = searchedBoard.rows.map(
             board => board.dataValues
@@ -100,8 +157,8 @@ export class BoardService {
     async createBoard(newBoardDto) {
         // 작성한 게시글 저장
 
-        const isUSerId = Boolean(newBoardDto.userId)
-        if (!isUSerId) {
+        const isUserId = Boolean(newBoardDto.userId)
+        if (!isUserId) {
             return {
                 result: false,
                 message: newBoardDto.tokenMsg,
@@ -197,16 +254,39 @@ export class BoardService {
 
         const foundBoard = await db.Board.findOne({
             where: { board_id: boardIdDto.boardId },
+            attributes: {
+                include: [
+                    [db.sequelize.col('User.user_nickName'), 'board_writer'],
+                    [
+                        db.sequelize.fn(
+                            'COUNT',
+                            db.sequelize.col('Board_likes.board_like_id')
+                        ),
+                        'board_like',
+                    ],
+                ],
+            },
+            include: [
+                {
+                    model: db.User,
+                    attributes: [],
+                },
+                {
+                    model: db.Board_like,
+                    attributes: [],
+                    where: {
+                        board_like_board_id: db.sequelize.col('Board.board_id'),
+                    },
+                    required: false,
+                },
+            ],
+            group: ['Board.board_id'], // board_id를 기준으로 그룹화
         })
 
         const isAuth = Boolean(
             // 현재 사용자와 게시글 작성자의 일치 여부
-            foundBoard.dataValues.board_user_id === boardIdDto.userId
+            foundBoard.dataValues?.board_user_id === boardIdDto.userId
         )
-
-        await db.Board.increment('board_view', {
-            where: { board_id: boardIdDto.boardId },
-        })
 
         if (foundBoard instanceof db.Board) {
             return {
@@ -256,6 +336,8 @@ export class BoardService {
 
         if (deletedRowNum > 0) {
             return { result: true, message: '삭제 성공' }
+        } else if (deletedRowNum === 0) {
+            return { result: true, message: '삭제할 게시글이 존재하지 않음' }
         } else {
             return { result: false, message: '삭제 실패' }
         }
