@@ -342,4 +342,62 @@ export class BoardService {
             return { result: false, message: '삭제 실패' }
         }
     }
+
+    async checkLike(boardIdDto) {
+        const liked = await db.Board_like.findOne({
+            where: {
+                board_like_user_id: boardIdDto.userId,
+                board_like_board_id: boardIdDto.boardId,
+            },
+        })
+
+        if (liked instanceof db.Board_like) {
+            return {
+                result: true,
+                message: '게시글을 좋아요한 유저',
+                isLike: true,
+            }
+        } else if (liked === null) {
+            return {
+                result: true,
+                message: '게시글을 좋아요하지 않은 유저',
+                isLike: false,
+            }
+        } else {
+            return { result: false, message: '서버 오류' }
+        }
+    }
+
+    async likeBoard(boardIdDto) {
+        const newLike = await db.Board_like.create({
+            board_like_user_id: boardIdDto.userId, // 현재 유저 id
+            board_like_board_id: boardIdDto.boardId, // 게시글 id
+        })
+        if (newLike instanceof db.Board_like) {
+            return { result: true, message: '게시글 좋아요 성공' }
+        } else {
+            return {
+                result: false,
+                message: '게시글 좋아요 실패',
+            }
+        }
+    }
+
+    async deleteLike(accessCheckDto) {
+        const deletedRowNum = await db.Board_like.destroy({
+            where: {
+                board_like_user_id: accessCheckDto.userId, // 현재 유저 id
+                board_like_board_id: accessCheckDto.boardId, // 게시글 id
+            },
+        })
+
+        if (deletedRowNum > 0) {
+            return { result: true, message: '좋아요 취소 성공' }
+        } else if (deletedRowNum === 0) {
+            return { result: false, message: '좋아요 취소 실패' }
+        } else {
+            return { result: false, message: '서버 오류' }
+        }
+    }
+
 }
