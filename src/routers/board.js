@@ -327,3 +327,24 @@ boardRouter.delete(
         }
     })
 )
+
+boardRouter.put(
+    // 프론트에서 캐시한 조회수를 업데이트
+    '/:boardId/view',
+    validate([body('view').notEmpty()]),
+    wrapper(async (req, res) => {
+        const viewDto = {
+            boardId: req.params.boardId.split(':')[1],
+            view : req.body.view
+        }
+
+        const updatedView = await boardService.updateView(viewDto)
+
+        if (updatedView.result === true) {
+            return res.status(200).send(updatedView)
+        } else {
+            return res.status(500).send(updatedView)
+        }
+    })
+
+)

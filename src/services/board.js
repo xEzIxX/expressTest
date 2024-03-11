@@ -99,7 +99,7 @@ export class BoardService {
                         ),
                         'board_like',
                     ],
-                ]
+                ],
             },
             order: [sortOrder], // 정렬 방식
             include: [
@@ -116,7 +116,7 @@ export class BoardService {
                     required: false,
                 },
             ],
-            group: ['Board.board_id'], 
+            group: ['Board.board_id'],
         })
         const searchedBoardDataArray = searchedBoard.rows.map(
             board => board.dataValues
@@ -400,4 +400,21 @@ export class BoardService {
         }
     }
 
+    async updateView(viewDto) {
+        const updatedRowsNum = await db.Board.update(
+            {
+                board_view: viewDto.view,
+            },
+            {
+                where: { board_id: viewDto.boardId }, // 게시글 id
+            }
+        )
+
+        console.log(updatedRowsNum)
+        if (updatedRowsNum[0] > 0) {
+            return { result: true, message: '게시글 조회수 업데이트 완료' }
+        } else {
+            return { result: false, message: '게시글 조회수 업데이트 실패' }
+        }
+    }
 }
