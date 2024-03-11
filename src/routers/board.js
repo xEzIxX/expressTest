@@ -211,3 +211,119 @@ boardRouter.delete(
         }
     })
 )
+
+boardRouter.get(
+    // 현재 유저가 조회 중인 게시글의 '좋아요' 여부 조회
+    '/:boardId/like',
+    wrapper(async (req, res) => {
+        const boardIdDto = {
+            userId: req.userId,
+            boardId: req.params.boardId.split(':')[1],
+        }
+
+        const checkedLike = await boardService.checkLike(boardIdDto)
+
+        if (checkedLike.result === true) {
+            return res.status(200).send(checkedLike)
+        } else {
+            return res.status(500).send(checkedLike)
+        }
+    })
+)
+
+boardRouter.post(
+    // 현재 유저의 게시글 '좋아요' 정보 저장
+    '/:boardId/like',
+    wrapper(async (req, res) => {
+        const boardIdDto = {
+            userId: req.userId,
+            boardId: req.params.boardId.split(':')[1],
+        }
+
+        const likedBoard = await boardService.likeBoard(boardIdDto)
+
+        if (likedBoard.result === true) {
+            return res.status(200).send(likedBoard)
+        } else {
+            return res.status(500).send(likedBoard)
+        }
+    })
+)
+
+boardRouter.delete(
+    // 현재 유저의 게시글 '좋아요' 삭제
+    '/:boardId/like',
+    wrapper(async (req, res) => {
+        const accessCheckDto = {
+            userId: req.userId,
+            tokenMsg: req.tokenErrMsg || null,
+            boardId: req.params.boardId.split(':')[1],
+        }
+
+        const deleted = await boardService.deleteLike(accessCheckDto)
+
+        if (deleted.result === true) {
+            return res.status(200).send(deleted)
+        } else {
+            return res.status(500).send(deleted)
+        }
+    })
+)
+
+boardRouter.get(
+    // 현재 유저가 조회 중인 게시글 작성자 '팔로우' 여부 조회
+    '/:boardId/follow',
+    wrapper(async (req, res) => {
+        const boardIdDto = {
+            userId: req.userId,
+            boardId: req.params.boardId.split(':')[1],
+        }
+
+        const checkedfollow = await boardService.checkfollow(boardIdDto)
+
+        if (checkedfollow.result === true) {
+            return res.status(200).send(checkedfollow)
+        } else {
+            return res.status(500).send(checkedfollow)
+        }
+    })
+)
+
+boardRouter.post(
+    // 현재 유저의 게시글 작성자 '팔로우' 정보 저장
+    '/:boardId/follow',
+    wrapper(async (req, res) => {
+        const boardIdDto = {
+            userId: req.userId,
+            boardId: req.params.boardId.split(':')[1],
+        }
+
+        const followedUser = await boardService.followUser(boardIdDto)
+
+        if (followedUser.result === true) {
+            return res.status(200).send(followedUser)
+        } else {
+            return res.status(500).send(followedUser)
+        }
+    })
+)
+
+boardRouter.delete(
+    // 현재 유저의 '게시글 작성자 팔로우' 삭제
+    '/:boardId/follow',
+    wrapper(async (req, res) => {
+        const accessCheckDto = {
+            userId: req.userId,
+            tokenMsg: req.tokenErrMsg || null,
+            boardId: req.params.boardId.split(':')[1],
+        }
+
+        const deleted = await boardService.deleteFollow(accessCheckDto)
+
+        if (deleted.result === true) {
+            return res.status(200).send(deleted)
+        } else {
+            return res.status(500).send(deleted)
+        }
+    })
+)
