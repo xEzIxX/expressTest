@@ -185,20 +185,20 @@ export class BoardService {
         }
     }
 
-    async getOriginalById(accessCheckDto) {
+    async getOriginalById(boardAuthDto) {
         // 게시글 수정을 위해 게시글 원본 반환
 
         const original = await db.Board.findOne({
-            where: { board_id: accessCheckDto.boardId },
+            where: { board_id: boardAuthDto.boardId },
         }) // 반환객체 : Board{ dataValues: {}, _previousDataValues: {}, ... }
 
         const isValid = Boolean(
-            accessCheckDto.userId === original.dataValues.board_user_id
+            boardAuthDto.userId === original.dataValues.board_user_id
         )
         if (!isValid) {
             return {
                 result: false,
-                message: accessCheckDto.tokenMsg || '권한없음',
+                message: boardAuthDto.tokenMsg || '작성자와 불일치',
                 data: null,
             }
         }
@@ -250,11 +250,11 @@ export class BoardService {
         }
     }
 
-    async getBoardById(boardIdDto) {
+    async getBoardById(boardAuthDto) {
         // 게시글 아이디와 일치하는 게시글 데이터 반환
 
         const foundBoard = await db.Board.findOne({
-            where: { board_id: boardIdDto.boardId },
+            where: { board_id: boardAuthDto.boardId },
             attributes: {
                 include: [
                     [db.sequelize.col('User.user_nickName'), 'board_writer'],
@@ -286,7 +286,7 @@ export class BoardService {
 
         const isAuth = Boolean(
             // 현재 사용자와 게시글 작성자의 일치 여부
-            foundBoard.dataValues?.board_user_id === boardIdDto.userId
+            foundBoard.dataValues?.board_user_id === boardAuthDto.userId
         )
 
         if (foundBoard instanceof db.Board) {
@@ -316,23 +316,40 @@ export class BoardService {
         }
     }
 
-    async deleteBoardById(accessCheckDto) {
-        // 게시글 아이디 accessCheckDto와 일치하는 게시글 데이터 삭제
+    async updateView(viewDto) {
+        const updatedRowsNum = await db.Board.update(
+            {
+                board_view: viewDto.view,
+            },
+            {
+                where: { board_id: viewDto.boardId },
+            }
+        )
+
+        if (updatedRowsNum[0] > 0) {
+            return { result: true, message: '게시글 조회수 업데이트 완료' }
+        } else {
+            return { result: false, message: '게시글 조회수 업데이트 실패' }
+        }
+    }
+
+    async deleteBoardById(boardIdDto) {
+        // 게시글 아이디 boardIdDto와 일치하는 게시글 데이터 삭제
 
         const board = await db.Board.findOne({
-            where: { board_id: accessCheckDto.boardId },
+            where: { board_id: boardIdDto.boardId },
         })
 
-        const isValid = Boolean(board.board_user_id === accessCheckDto.userId)
+        const isValid = Boolean(board.board_user_id === boardIdDto.userId)
         if (!isValid) {
             return {
                 result: false,
-                message: accessCheckDto.tokenMsg || '삭제 권한 없음',
+                message: boardIdDto.tokenMsg || '삭제 권한 없음',
             }
         }
 
         const deletedRowNum = await db.Board.destroy({
-            where: { board_id: accessCheckDto.boardId },
+            where: { board_id: boardIdDto.boardId },
         }) // 반환값 : 삭제된 열의 갯수
 
         if (deletedRowNum > 0) {
@@ -344,11 +361,11 @@ export class BoardService {
         }
     }
 
-    async checkLike(boardIdDto) {
+    async checkLike(boardAuthDto) {
         const liked = await db.Board_like.findOne({
             where: {
-                board_like_user_id: boardIdDto.userId,
-                board_like_board_id: boardIdDto.boardId,
+                board_like_user_id: boardAuthDto.userId,
+                board_like_board_id: boardAuthDto.boardId,
             },
         })
 
@@ -365,30 +382,30 @@ export class BoardService {
                 isLike: false,
             }
         } else {
-            return { result: false, message: '서버 오류' }
+            return { result: false, message: req.tokenMsg || '서버 오류' }
         }
     }
 
-    async likeBoard(boardIdDto) {
+    async likeBoard(boardAuthDto) {
         const newLike = await db.Board_like.create({
-            board_like_user_id: boardIdDto.userId, // 현재 유저 id
-            board_like_board_id: boardIdDto.boardId, // 게시글 id
+            board_like_user_id: boardAuthDto.userId, // 현재 유저 id
+            board_like_board_id: boardAuthDto.boardId, // 게시글 id
         })
         if (newLike instanceof db.Board_like) {
             return { result: true, message: '게시글 좋아요 성공' }
         } else {
             return {
                 result: false,
-                message: '게시글 좋아요 실패',
+                message: req.tokenMsg || '서버 오류',
             }
         }
     }
 
-    async deleteLike(accessCheckDto) {
+    async deleteLike(boardAuthDto) {
         const deletedRowNum = await db.Board_like.destroy({
             where: {
-                board_like_user_id: accessCheckDto.userId, // 현재 유저 id
-                board_like_board_id: accessCheckDto.boardId, // 게시글 id
+                board_like_user_id: boardAuthDto.userId, // 현재 유저 id
+                board_like_board_id: boardAuthDto.boardId, // 게시글 id
             },
         })
 
@@ -397,17 +414,17 @@ export class BoardService {
         } else if (deletedRowNum === 0) {
             return { result: false, message: '좋아요 취소 실패' }
         } else {
-            return { result: false, message: '서버 오류' }
+            return { result: false, message: req.tokenMsg || '서버 오류' }
         }
     }
 
-    async checkFollow(boardIdDto) {
+    async checkFollow(boardAuthDto) {
         const followed = await db.User_follow.findOne({
-            user_follow_follower_id: boardIdDto.userId,
+            user_follow_follower_id: boardAuthDto.userId,
             user_follow_followed_id: db.sequelize.literal(`(
                     SELECT board_user_id
                     FROM Board
-                    WHERE board_id = '${boardIdDto.boardId}'
+                    WHERE board_id = '${boardAuthDto.boardId}'
                 )`),
         })
 
@@ -424,18 +441,18 @@ export class BoardService {
                 isFollowed: false,
             }
         } else {
-            return { result: false, message: '서버 오류' }
+            return { result: false, message: req.tokenMsg || '서버 오류' }
         }
     }
 
-    async followUser(boardIdDto) {
+    async followUser(boardAuthDto) {
         const followed = await db.User_follow.findOne({
             // 이미 팔로우한 유저인지 확인
-            user_follow_follower_id: boardIdDto.userId,
+            user_follow_follower_id: boardAuthDto.userId,
             user_follow_followed_id: db.sequelize.literal(`(
                 SELECT board_user_id
                 FROM Board
-                WHERE board_id = '${boardIdDto.boardId}'
+                WHERE board_id = '${boardAuthDto.boardId}'
             )`),
         })
 
@@ -445,15 +462,15 @@ export class BoardService {
                 message: '이미 팔로우 추가한 유저',
             }
         } else if (!(followed === null)) {
-            return { result: false, message: '서버 오류' }
+            return { result: false, message: req.tokenMsg || '서버 오류' }
         }
 
         const newFollow = await db.User_follow.create({
-            user_follow_follower_id: boardIdDto.userId,
+            user_follow_follower_id: boardAuthDto.userId,
             user_follow_followed_id: db.sequelize.literal(`(
                 SELECT board_user_id
                 FROM Board
-                WHERE board_id = '${boardIdDto.boardId}'
+                WHERE board_id = '${boardAuthDto.boardId}'
             )`),
         })
 
@@ -470,15 +487,15 @@ export class BoardService {
         }
     }
 
-    async deleteFollow(accessCheckDto) {
+    async deleteFollow(boardAuthDto) {
         const followedUser = await db.Board.findOne({
             attributes: ['board_user_id'],
-            where: { board_id: accessCheckDto.boardId },
+            where: { board_id: boardAuthDto.boardId },
         })
 
         const deletedRowNum = await db.User_follow.destroy({
             where: {
-                user_follow_follower_id: accessCheckDto.userId,
+                user_follow_follower_id: boardAuthDto.userId,
                 user_follow_followed_id: followedUser.dataValues.board_user_id,
             },
         })
@@ -490,23 +507,6 @@ export class BoardService {
             return { result: false, message: '팔로우 취소 실패' }
         } else {
             return { result: false, message: tokenMsg || '서버 오류' }
-        }
-    }
-
-    async updateView(viewDto) {
-        const updatedRowsNum = await db.Board.update(
-            {
-                board_view: viewDto.view,
-            },
-            {
-                where: { board_id: viewDto.boardId },
-            }
-        )
-
-        if (updatedRowsNum[0] > 0) {
-            return { result: true, message: '게시글 조회수 업데이트 완료' }
-        } else {
-            return { result: false, message: '게시글 조회수 업데이트 실패' }
         }
     }
 }

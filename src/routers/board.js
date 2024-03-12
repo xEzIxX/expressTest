@@ -62,13 +62,11 @@ boardRouter.get(
     // 게시글 작성 폼 조회
     '/form',
     wrapper(async (req, res) => {
-        // console.log('게시글 작성 폼 조회 req.userId : ', req.userId)
-        const isToken = Boolean(req.userId)
-
         const formAuthDto = {
             userId: req.userId,
-            tokenMsg: req.tokenErrMsg,
+            tokenMsg: req.tokenErrMsg || null,
         }
+        const isToken = Boolean(req.userId)
 
         const checedkFormAuth = await boardService.checkFormAuth(formAuthDto)
 
@@ -91,8 +89,6 @@ boardRouter.post(
     '/form',
     validate([body('title').notEmpty(), body('content').notEmpty()]),
     wrapper(async (req, res) => {
-        // console.log('작성한 게시글 저장  req.userId : ', req.userId)
-
         const newBoardDto = {
             title: req.body.title,
             content: req.body.content,
@@ -116,16 +112,14 @@ boardRouter.get(
     // 수정 권한이 있다면 게시글 수정 페이지 조회
     '/:boardId/edit',
     wrapper(async (req, res) => {
-        // console.log('수정 페이지 조회 라우터 :' + req.userId)
+        const boardAuthDto = {
+            userId: req.userId,
+            boardId: req.params.boardId.split(':')[1],
+            tokenMsg: req.tokenErrMsg || null,
+        }
         const isToken = Boolean(req.userId)
 
-        const accessCheckDto = {
-            userId: req.userId,
-            tokenMsg: req.tokenErrMsg || null,
-            boardId: req.params.boardId.split(':')[1],
-        }
-
-        const foundOriginal = await boardService.getOriginalById(accessCheckDto)
+        const foundOriginal = await boardService.getOriginalById(boardAuthDto)
 
         // console.log('라우터에서 최종 전달 객체 : ', foundOriginal)
         if (foundOriginal.result === true) {
@@ -214,15 +208,13 @@ boardRouter.delete(
     // 게시글 아이디가 boardId인 게시글 삭제
     '/:boardId',
     wrapper(async (req, res) => {
-        // console.log(req.userId)
-
-        const accessCheckDto = {
+        const boardAuthDto = {
             userId: req.userId,
-            tokenMsg: req.tokenErrMsg || null,
             boardId: req.params.boardId.split(':')[1],
+            tokenMsg: req.tokenErrMsg || null,
         }
 
-        const deletedBoard = await boardService.deleteBoardById(accessCheckDto)
+        const deletedBoard = await boardService.deleteBoardById(boardAuthDto)
 
         if (deletedBoard.result === true) {
             return res.status(200).send(deletedBoard)
@@ -236,12 +228,13 @@ boardRouter.get(
     // 현재 유저가 조회 중인 게시글의 '좋아요' 여부 조회
     '/:boardId/like',
     wrapper(async (req, res) => {
-        const boardIdDto = {
+        const boardAuthDto = {
             userId: req.userId,
             boardId: req.params.boardId.split(':')[1],
+            tokenMsg: req.tokenErrMsg || null,
         }
 
-        const checkedLike = await boardService.checkLike(boardIdDto)
+        const checkedLike = await boardService.checkLike(boardAuthDto)
 
         if (checkedLike.result === true) {
             return res.status(200).send(checkedLike)
@@ -255,12 +248,13 @@ boardRouter.post(
     // 현재 유저의 게시글 '좋아요' 정보 저장
     '/:boardId/like',
     wrapper(async (req, res) => {
-        const boardIdDto = {
+        const boardAuthDto = {
             userId: req.userId,
             boardId: req.params.boardId.split(':')[1],
+            tokenMsg: req.tokenErrMsg || null,
         }
 
-        const likedBoard = await boardService.likeBoard(boardIdDto)
+        const likedBoard = await boardService.likeBoard(boardAuthDto)
 
         if (likedBoard.result === true) {
             return res.status(200).send(likedBoard)
@@ -274,13 +268,13 @@ boardRouter.delete(
     // 현재 유저의 게시글 '좋아요' 삭제
     '/:boardId/like',
     wrapper(async (req, res) => {
-        const accessCheckDto = {
+        const boardAuthDto = {
             userId: req.userId,
-            tokenMsg: req.tokenErrMsg || null,
             boardId: req.params.boardId.split(':')[1],
+            tokenMsg: req.tokenErrMsg || null,
         }
 
-        const deleted = await boardService.deleteLike(accessCheckDto)
+        const deleted = await boardService.deleteLike(boardAuthDto)
 
         if (deleted.result === true) {
             return res.status(200).send(deleted)
@@ -294,12 +288,13 @@ boardRouter.get(
     // 현재 유저가 조회 중인 게시글 작성자 '팔로우' 여부 조회
     '/:boardId/follow',
     wrapper(async (req, res) => {
-        const boardIdDto = {
+        const boardAuthDto = {
             userId: req.userId,
             boardId: req.params.boardId.split(':')[1],
+            tokenMsg: req.tokenErrMsg || null,
         }
 
-        const checkedfollow = await boardService.checkFollow(boardIdDto)
+        const checkedfollow = await boardService.checkFollow(boardAuthDto)
 
         if (checkedfollow.result === true) {
             return res.status(200).send(checkedfollow)
@@ -313,12 +308,13 @@ boardRouter.post(
     // 현재 유저의 게시글 작성자 '팔로우' 정보 저장
     '/:boardId/follow',
     wrapper(async (req, res) => {
-        const boardIdDto = {
+        const boardAuthDto = {
             userId: req.userId,
             boardId: req.params.boardId.split(':')[1],
+            tokenMsg: req.tokenErrMsg || null,
         }
 
-        const followedUser = await boardService.followUser(boardIdDto)
+        const followedUser = await boardService.followUser(boardAuthDto)
 
         if (followedUser.result === true) {
             return res.status(200).send(followedUser)
@@ -332,13 +328,13 @@ boardRouter.delete(
     // 현재 유저의 '게시글 작성자 팔로우' 삭제
     '/:boardId/follow',
     wrapper(async (req, res) => {
-        const accessCheckDto = {
+        const boardAuthDto = {
             userId: req.userId,
-            tokenMsg: req.tokenErrMsg || null,
             boardId: req.params.boardId.split(':')[1],
+            tokenMsg: req.tokenErrMsg || null,
         }
 
-        const deleted = await boardService.deleteFollow(accessCheckDto)
+        const deleted = await boardService.deleteFollow(boardAuthDto)
 
         if (deleted.result === true) {
             return res.status(200).send(deleted)
