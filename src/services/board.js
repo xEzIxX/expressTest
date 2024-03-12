@@ -11,7 +11,7 @@ export class BoardService {
                     [
                         db.sequelize.fn(
                             'COUNT',
-                            db.sequelize.col('Board_likes.board_like_id')
+                            db.sequelize.col('Board_likes.board_like_user_id')
                         ),
                         'board_like',
                     ],
@@ -61,7 +61,6 @@ export class BoardService {
         let sortOrder
 
         switch (queryDto.sort) {
-            // 정렬 방식 수정 예정 (좋아요/ 조회수 테이블 추가로 인한..)
             case 'date_desc':
                 sortOrder = ['createdAt', 'DESC']
                 break
@@ -69,10 +68,10 @@ export class BoardService {
                 sortOrder = ['createdAt', 'ASC']
                 break
             case 'liked_desc':
-                sortOrder = ['board_liked', 'DESC']
+                sortOrder = ['board_like', 'DESC']
                 break
             case 'liked_asc':
-                sortOrder = ['board_liked', 'ASC']
+                sortOrder = ['board_like', 'ASC']
                 break
             case 'views_desc':
                 sortOrder = ['board_view', 'DESC']
@@ -90,19 +89,19 @@ export class BoardService {
                     [Op.substring]: queryDto.q, // title에 검색어 포함 여부 확인
                 },
             },
+            order: [sortOrder], // 정렬 방식
             attributes: {
                 include: [
                     [db.sequelize.col('User.user_nickname'), 'board_writer'],
                     [
                         db.sequelize.fn(
                             'COUNT',
-                            db.sequelize.col('Board_likes.board_like_id')
+                            db.sequelize.col('Board_likes.board_like_user_id')
                         ),
                         'board_like',
                     ],
                 ],
             },
-            order: [sortOrder], // 정렬 방식
             include: [
                 {
                     model: db.User,
@@ -124,7 +123,7 @@ export class BoardService {
             board => board.dataValues
         )
 
-        if (searchedBoard.count >= 0) {
+        if (searchedBoard.count.length >= 0) {
             return {
                 result: true,
                 message: '검색된 게시글 리스트 조회 성공',
@@ -262,7 +261,7 @@ export class BoardService {
                     [
                         db.sequelize.fn(
                             'COUNT',
-                            db.sequelize.col('Board_likes.board_like_id')
+                            db.sequelize.col('Board_likes.board_like_user_id')
                         ),
                         'board_like',
                     ],
