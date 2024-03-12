@@ -190,6 +190,26 @@ boardRouter.get(
     })
 )
 
+boardRouter.put(
+    // 프론트에서 캐시한 조회수를 업데이트
+    '/:boardId',
+    validate([body('view').notEmpty()]),
+    wrapper(async (req, res) => {
+        const viewDto = {
+            boardId: req.params.boardId.split(':')[1],
+            view: req.body.view,
+        }
+
+        const updatedView = await boardService.updateView(viewDto)
+
+        if (updatedView.result === true) {
+            return res.status(200).send(updatedView)
+        } else {
+            return res.status(500).send(updatedView)
+        }
+    })
+)
+
 boardRouter.delete(
     // 게시글 아이디가 boardId인 게시글 삭제
     '/:boardId',
@@ -324,26 +344,6 @@ boardRouter.delete(
             return res.status(200).send(deleted)
         } else {
             return res.status(500).send(deleted)
-        }
-    })
-)
-
-boardRouter.put(
-    // 프론트에서 캐시한 조회수를 업데이트
-    '/:boardId/view',
-    validate([body('view').notEmpty()]),
-    wrapper(async (req, res) => {
-        const viewDto = {
-            boardId: req.params.boardId.split(':')[1],
-            view: req.body.view,
-        }
-
-        const updatedView = await boardService.updateView(viewDto)
-
-        if (updatedView.result === true) {
-            return res.status(200).send(updatedView)
-        } else {
-            return res.status(500).send(updatedView)
         }
     })
 )
