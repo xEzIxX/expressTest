@@ -1,32 +1,26 @@
-export function Comment(sequelize, DataTypes) {
+export function User_follow(sequelize, DataTypes) {
     return sequelize.define(
-        'Comment',
+        'User_follow',
         {
-            comment_id: {
+            user_follow_id: {
+                // 유저 팔로우 테이블의 id
                 type: DataTypes.UUID,
                 defaultValue: DataTypes.UUIDV4,
                 primaryKey: true,
                 allowNull: false,
             },
-            comment_content: {
-                type: DataTypes.STRING(512),
-                allowNull: false,
-            },
-            comment_user_id: {
+            user_follow_follower_id: {
+                // 참조할 유저 테이블의 (팔로잉 하는) 유저 id
                 type: DataTypes.UUID,
-                field: 'comment_writer',
                 references: {
                     model: 'User',
                     key: 'user_id',
                 },
             },
-            comment_board_id: {
+            user_follow_followed_id: {
+                // 팔로우할 유저 id
                 type: DataTypes.UUID,
-                field: 'board_commenter',
-                references: {
-                    model: 'Board',
-                    key: 'board_id',
-                },
+                allowNull: true,
             },
         },
         {

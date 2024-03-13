@@ -1,10 +1,10 @@
 import '../config/env.js'
 import jwt from 'jsonwebtoken'
 
-export function newToken(userId, userNickname) {
+export function newToken(userId) {
     // payload에 사용자의 id, nickname을 넣어준다.
     try {
-        return jwt.sign({ userId, userNickname }, process.env.SECRET_KEY, {
+        return jwt.sign({ userId }, process.env.SECRET_KEY, {
             algorithm: 'HS512', // SHA512
             expiresIn: '30m',
         }) // 동기적으로 실행, 문자열 jwt를 발급

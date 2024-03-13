@@ -12,9 +12,6 @@ export function User(sequelize, DataTypes) {
                 type: DataTypes.STRING(512),
                 allowNull: false,
             },
-            user_follow: {
-                type: DataTypes.STRING(50),
-            },
             user_nickname: {
                 type: DataTypes.STRING(50),
                 allowNull: false,
