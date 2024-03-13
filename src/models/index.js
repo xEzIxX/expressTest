@@ -5,10 +5,10 @@ import { User } from './user.js'
 import { Board } from './board.js'
 import { Comment } from './comment.js'
 
-import { Board_like } from './board_like.js'
-import { Comment_like } from './comment_like.js'
+import { Board_like } from './boardLike.js'
+import { Comment_like } from './commentLike.js'
 
-import { User_follow } from './user_follow.js'
+import { User_follow } from './userLollow.js'
 
 const db = {}
 
